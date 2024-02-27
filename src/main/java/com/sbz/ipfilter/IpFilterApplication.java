@@ -1,4 +1,4 @@
-package com.sbz.ipfilter.ipfilter;
+package com.sbz.ipfilter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
