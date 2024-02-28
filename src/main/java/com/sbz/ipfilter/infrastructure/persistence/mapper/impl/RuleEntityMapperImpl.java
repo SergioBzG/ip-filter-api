@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class RuleMapperImpl implements Mapper<Rule, RuleEntity> {
+public class RuleEntityMapperImpl implements Mapper<Rule, RuleEntity> {
 
     private final ModelMapper modelMapper;
 
-    public RuleMapperImpl(final ModelMapper modelMapper) {
+    public RuleEntityMapperImpl(final ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
