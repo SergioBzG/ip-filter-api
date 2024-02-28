@@ -32,7 +32,8 @@ public class Rule {
     @Size(max = 15)
     private String upperSourceIp;
 
-    @NotNull    @NotBlank(message = "a lower destination ip is required")
+    @NotNull
+    @NotBlank(message = "a lower destination ip is required")
     @Size(max = 15)
     private String lowerDestinationIp;
 

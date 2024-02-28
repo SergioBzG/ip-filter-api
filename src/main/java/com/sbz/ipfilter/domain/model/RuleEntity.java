@@ -1,5 +1,7 @@
 package com.sbz.ipfilter.domain.model;
 
+import com.sbz.ipfilter.domain.utils.Ipv4;
+import com.sbz.ipfilter.domain.utils.RuleChecker;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +13,7 @@ import java.util.Deque;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RuleEntity implements RuleChecker {
-    private Long id;
+public class RuleEntity implements RuleChecker, Ipv4 {
     private String lowerSourceIp;
     private String upperSourceIp;
     private String lowerDestinationIp;
@@ -61,4 +62,11 @@ public class RuleEntity implements RuleChecker {
         return true;
     }
 
+    @Override
+    public Boolean checkIpRuleFormat() {
+        return this.getLowerSourceIp().matches(this.IP_PATTERN)
+                && this.getUpperSourceIp().matches(this.IP_PATTERN)
+                && this.getLowerDestinationIp().matches(this.IP_PATTERN)
+                && this.getUpperDestinationIp().matches(this.IP_PATTERN);
+    }
 }

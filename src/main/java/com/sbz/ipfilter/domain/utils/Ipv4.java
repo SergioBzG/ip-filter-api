@@ -1,12 +1,11 @@
-package com.sbz.ipfilter.domain.model;
+package com.sbz.ipfilter.domain.utils;
 
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public interface RuleChecker {
-
-    Boolean checkIpAccess(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp);
+public interface Ipv4 {
+    String IP_PATTERN = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}";
 
     default Deque<Integer> getRawIp(String ip) {
         Deque<Integer> rawIp = new LinkedList<>();

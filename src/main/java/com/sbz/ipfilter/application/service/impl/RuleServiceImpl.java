@@ -15,14 +15,14 @@ import java.util.stream.StreamSupport;
 public class RuleServiceImpl implements IRuleService {
 
     private final RuleRepository ruleRepository;
-    private final Mapper<Rule, RuleEntity> ruleEntityMapper;
+    private final Mapper<RuleDto, RuleEntity> ruleEntityMapper;
     private final Mapper<Rule, RuleDto> ruleDtoMapper;
 
 
     public RuleServiceImpl(
             final RuleRepository ruleRepository,
             final Mapper<Rule, RuleDto> ruleDtoMapper,
-            final Mapper<Rule, RuleEntity> ruleEntityMapper
+            final Mapper<RuleDto, RuleEntity> ruleEntityMapper
     ) {
         this.ruleRepository = ruleRepository;
         this.ruleEntityMapper = ruleEntityMapper;
@@ -31,10 +31,15 @@ public class RuleServiceImpl implements IRuleService {
 
     @Override
     public RuleDto save(RuleDto ruleDto) {
-        // TODO: Verify rule
-        Rule rule = this.ruleDtoMapper.mapFrom(ruleDto);
+        // Get RuleEntity of domain to validations
+        RuleEntity ruleEntity = ruleEntityMapper.mapTo(ruleDto);
+        // Check ip format
+        if(!ruleEntity.checkIpRuleFormat()) {
+            throw new IllegalStateException("Incorrect ip format");
+        }
+
         Rule ruleSaved = this.ruleRepository.save(
-                rule
+                this.ruleDtoMapper.mapFrom(ruleDto)
         );
         return this.ruleDtoMapper.mapTo(ruleSaved);
     }
