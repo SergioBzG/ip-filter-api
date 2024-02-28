@@ -33,7 +33,7 @@ public class RuleEntity implements RuleChecker {
         boolean lowerBoundChecked = false;
         boolean upperBoundChecked = false;
 
-        for(int i = 0; i < this.DEFAULT_IP_SIZE; i++) {
+        while(!ip.isEmpty()) {
             int firstPartOfIp = ip.pollFirst();
             int firstPartOfLower = lowerIp.pollFirst();
             int firstPartOfUpper = upperIp.pollFirst();
@@ -51,7 +51,6 @@ public class RuleEntity implements RuleChecker {
                 else if (firstPartOfIp > firstPartOfUpper)
                     return false;
             }
-
         }
         return true;
     }

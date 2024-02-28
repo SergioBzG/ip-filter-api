@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 public interface RuleChecker {
 
-    int DEFAULT_IP_SIZE = 4;
     Boolean checkIpAccess(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp);
 
     default Deque<Integer> getRawIp(String ip) {
