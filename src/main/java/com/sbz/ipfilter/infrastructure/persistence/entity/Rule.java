@@ -1,4 +1,4 @@
-package com.sbz.ipfilter.infrastructure.persistence;
+package com.sbz.ipfilter.infrastructure.persistence.entity;
 
 
 import jakarta.persistence.*;
