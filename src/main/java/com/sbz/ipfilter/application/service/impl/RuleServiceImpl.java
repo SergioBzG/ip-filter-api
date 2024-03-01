@@ -33,10 +33,16 @@ public class RuleServiceImpl implements IRuleService {
     public RuleDto save(RuleDto ruleDto) {
         // Get RuleEntity of domain to validations
         RuleEntity ruleEntity = ruleEntityMapper.mapTo(ruleDto);
-        // Check ip format
-        if(!ruleEntity.checkIpRuleFormat()) {
+        // Check ip
+        if(!ruleEntity.checkIpFormat())
+            // Check ip format
             throw new IllegalStateException("Incorrect ip format");
-        }
+        else if(!ruleEntity.checkIpNumbers())
+            // Check ip snippet
+            throw new IllegalStateException("An IP can only has numbers between 0 and 255 (inclusive)");
+        else if(!ruleEntity.checkSourceAndDestinationIpRange())
+            // Check that ranges of ips are valid
+            throw new IllegalStateException("Invalid ip range");
 
         Rule ruleSaved = this.ruleRepository.save(
                 this.ruleDtoMapper.mapFrom(ruleDto)

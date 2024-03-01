@@ -1,12 +1,26 @@
 package com.sbz.ipfilter.domain.utils;
 
 
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.LinkedList;
 
 
 public interface RuleChecker {
+    String IP_PATTERN = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}";
 
-    Boolean checkIpAccess(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp);
+    Boolean checkIpInRange(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp);
 
-    Boolean checkIpRuleFormat();
+    Boolean checkIpFormat();
+
+    Boolean checkIpRange(Deque<Integer> lowerIp, Deque<Integer> upperIp);
+
+    Boolean checkIpNumbers();
+
+    default Deque<Integer> getRawIp(String ip) {
+        Deque<Integer> rawIp = new LinkedList<>();
+        Arrays.stream(ip.split("\\."))
+                .forEach(str -> rawIp.add(Integer.valueOf(str)));
+        return rawIp;
+    }
 }
