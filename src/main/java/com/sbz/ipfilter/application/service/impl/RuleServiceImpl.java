@@ -1,6 +1,7 @@
 package com.sbz.ipfilter.application.service.impl;
 
 import com.sbz.ipfilter.application.service.IRuleService;
+import com.sbz.ipfilter.application.utils.Route;
 import com.sbz.ipfilter.domain.model.RuleEntity;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
@@ -64,5 +65,11 @@ public class RuleServiceImpl implements IRuleService {
         if(!exists)
             throw new IllegalStateException("Rule with id " + id + " does not exist");
         this.ruleRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean checkIpAccess(Route route) {
+        // TODO : retrieve all rules with allow = true and check against them the access
+        return false;
     }
 }

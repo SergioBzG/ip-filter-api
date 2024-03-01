@@ -1,6 +1,8 @@
 package com.sbz.ipfilter.application.controller;
 
 import com.sbz.ipfilter.application.service.IRuleService;
+import com.sbz.ipfilter.application.utils.Route;
+import com.sbz.ipfilter.application.utils.Response;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,14 @@ public class RuleController {
     public ResponseEntity deleteRule(@PathVariable("id") Long id) {
         ruleService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping(path = "/check")
+    public ResponseEntity<Response> checkIp(@RequestBody Route route) {
+        boolean allow = this.ruleService.checkIpAccess(route);
+        if(allow)
+            return new ResponseEntity<>(new Response("allowed access", true), HttpStatus.OK);
+        return new ResponseEntity<>(new Response("denied access", false), HttpStatus.OK);
     }
 
 }
