@@ -29,4 +29,11 @@ public class RuleController {
         RuleDto ruleSaved = this.ruleService.save(ruleDto);
         return new ResponseEntity<>(ruleSaved, HttpStatus.CREATED);
     }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity deleteRule(@PathVariable("id") Long id) {
+        ruleService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

@@ -57,4 +57,12 @@ public class RuleServiceImpl implements IRuleService {
                 .map(this.ruleDtoMapper::mapTo)
                 .toList();
     }
+
+    @Override
+    public void delete(Long id) {
+        boolean exists = this.ruleRepository.existsById(id);
+        if(!exists)
+            throw new IllegalStateException("Rule with id " + id + " does not exist");
+        this.ruleRepository.deleteById(id);
+    }
 }
