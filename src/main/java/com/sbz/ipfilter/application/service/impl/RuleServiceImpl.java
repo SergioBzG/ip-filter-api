@@ -7,6 +7,9 @@ import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
 import com.sbz.ipfilter.infrastructure.persistence.mapper.Mapper;
 import com.sbz.ipfilter.infrastructure.persistence.repository.RuleRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +36,10 @@ public class RuleServiceImpl implements IRuleService {
         this.ruleToRuleEntityMapper = ruleToRuleEntityMapper;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value="rules", allEntries = true),
+            @CacheEvict(value="routes", allEntries = true)
+    })
     @Override
     public RuleDto save(RuleDto ruleDto) {
         // Get RuleEntity of domain to validations
@@ -56,6 +63,7 @@ public class RuleServiceImpl implements IRuleService {
         return this.ruleToRuleDtoMapper.mapTo(ruleSaved);
     }
 
+    @Cacheable(value = "rules", sync = true)
     @Override
     public List<RuleDto> findAll() {
         Iterable<Rule> rulesIterable = this.ruleRepository.findAll();
@@ -64,6 +72,11 @@ public class RuleServiceImpl implements IRuleService {
                 .toList();
     }
 
+    @Caching(evict = {
+            @CacheEvict(value="rules", allEntries = true),
+            @CacheEvict(value="routes", allEntries = true)
+    })
+    @CacheEvict(value = "rules", allEntries = true)
     @Override
     public void delete(Long id) {
         boolean exists = this.ruleRepository.existsById(id);
@@ -72,6 +85,7 @@ public class RuleServiceImpl implements IRuleService {
         this.ruleRepository.deleteById(id);
     }
 
+    @Cacheable(value = "routes")
     @Override
     public boolean checkIpAccess(Route route) {
         // Check ips in route
