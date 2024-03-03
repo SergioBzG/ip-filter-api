@@ -10,10 +10,12 @@ import com.sbz.ipfilter.infrastructure.persistence.repository.RuleRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 @Service
 public class RuleServiceImpl implements IRuleService {
@@ -65,11 +67,9 @@ public class RuleServiceImpl implements IRuleService {
 
     @Cacheable(value = "rules", sync = true)
     @Override
-    public List<RuleDto> findAll() {
-        Iterable<Rule> rulesIterable = this.ruleRepository.findAll();
-        return StreamSupport.stream(rulesIterable.spliterator(), false)
-                .map(this.ruleToRuleDtoMapper::mapTo)
-                .toList();
+    public Page<RuleDto> findAll(Pageable pageable) {
+        Page<Rule> rulesPage = this.ruleRepository.findAll(pageable);
+        return rulesPage.map(this.ruleToRuleDtoMapper::mapTo);
     }
 
     @Caching(evict = {

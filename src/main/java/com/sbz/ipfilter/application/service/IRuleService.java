@@ -2,14 +2,15 @@ package com.sbz.ipfilter.application.service;
 
 import com.sbz.ipfilter.domain.model.Route;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface IRuleService {
 
     RuleDto save(RuleDto ruleDto);
 
-    List<RuleDto> findAll();
+    Page<RuleDto> findAll(Pageable pageable);
 
     void delete(Long id);
 
