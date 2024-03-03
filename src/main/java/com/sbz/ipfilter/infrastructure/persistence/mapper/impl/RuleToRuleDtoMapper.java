@@ -1,28 +1,27 @@
 package com.sbz.ipfilter.infrastructure.persistence.mapper.impl;
 
-import com.sbz.ipfilter.domain.model.RuleEntity;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
+import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
 import com.sbz.ipfilter.infrastructure.persistence.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-
 @Component
-public class RuleEntityMapperImpl implements Mapper<RuleDto, RuleEntity> {
+public class RuleToRuleDtoMapper implements Mapper<Rule, RuleDto> {
 
     private final ModelMapper modelMapper;
 
-    public RuleEntityMapperImpl(final ModelMapper modelMapper) {
+    public RuleToRuleDtoMapper(final ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
     @Override
-    public RuleEntity mapTo(RuleDto ruleDto) {
-        return this.modelMapper.map(ruleDto, RuleEntity.class);
+    public RuleDto mapTo(Rule rule) {
+        return this.modelMapper.map(rule, RuleDto.class);
     }
 
     @Override
-    public RuleDto mapFrom(RuleEntity ruleEntity) {
-        return this.modelMapper.map(ruleEntity, RuleDto.class);
+    public Rule mapFrom(RuleDto ruleDto) {
+        return this.modelMapper.map(ruleDto, Rule.class);
     }
 }

@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class Response {
     String message;
     Boolean status;
-
-
 }

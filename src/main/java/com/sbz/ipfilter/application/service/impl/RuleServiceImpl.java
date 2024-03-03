@@ -1,7 +1,7 @@
 package com.sbz.ipfilter.application.service.impl;
 
 import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.application.utils.Route;
+import com.sbz.ipfilter.domain.model.Route;
 import com.sbz.ipfilter.domain.model.RuleEntity;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
@@ -16,24 +16,27 @@ import java.util.stream.StreamSupport;
 public class RuleServiceImpl implements IRuleService {
 
     private final RuleRepository ruleRepository;
-    private final Mapper<RuleDto, RuleEntity> ruleEntityMapper;
-    private final Mapper<Rule, RuleDto> ruleDtoMapper;
+    private final Mapper<RuleDto, RuleEntity> ruleDtoToRuleEntityMapper;
+    private final Mapper<Rule, RuleDto> ruleToRuleDtoMapper;
+    private final Mapper<Rule, RuleEntity> ruleToRuleEntityMapper;
 
 
     public RuleServiceImpl(
             final RuleRepository ruleRepository,
-            final Mapper<Rule, RuleDto> ruleDtoMapper,
-            final Mapper<RuleDto, RuleEntity> ruleEntityMapper
+            final Mapper<Rule, RuleDto> ruleToRuleDtoMapper,
+            final Mapper<RuleDto, RuleEntity> ruleDtoToRuleEntityMapper,
+            final Mapper<Rule, RuleEntity> ruleToRuleEntityMapper
     ) {
         this.ruleRepository = ruleRepository;
-        this.ruleEntityMapper = ruleEntityMapper;
-        this.ruleDtoMapper = ruleDtoMapper;
+        this.ruleDtoToRuleEntityMapper = ruleDtoToRuleEntityMapper;
+        this.ruleToRuleDtoMapper = ruleToRuleDtoMapper;
+        this.ruleToRuleEntityMapper = ruleToRuleEntityMapper;
     }
 
     @Override
     public RuleDto save(RuleDto ruleDto) {
         // Get RuleEntity of domain to validations
-        RuleEntity ruleEntity = ruleEntityMapper.mapTo(ruleDto);
+        RuleEntity ruleEntity = ruleDtoToRuleEntityMapper.mapTo(ruleDto);
         // Check ip
         if(!ruleEntity.checkIpFormat())
             // Check ip format
@@ -46,16 +49,16 @@ public class RuleServiceImpl implements IRuleService {
             throw new IllegalStateException("Invalid ip range");
 
         Rule ruleSaved = this.ruleRepository.save(
-                this.ruleDtoMapper.mapFrom(ruleDto)
+                this.ruleToRuleDtoMapper.mapFrom(ruleDto)
         );
-        return this.ruleDtoMapper.mapTo(ruleSaved);
+        return this.ruleToRuleDtoMapper.mapTo(ruleSaved);
     }
 
     @Override
     public List<RuleDto> findAll() {
         Iterable<Rule> rulesIterable = this.ruleRepository.findAll();
         return StreamSupport.stream(rulesIterable.spliterator(), false)
-                .map(this.ruleDtoMapper::mapTo)
+                .map(this.ruleToRuleDtoMapper::mapTo)
                 .toList();
     }
 
@@ -69,7 +72,21 @@ public class RuleServiceImpl implements IRuleService {
 
     @Override
     public boolean checkIpAccess(Route route) {
-        // TODO : retrieve all rules with allow = true and check against them the access
-        return false;
+        // Check ips in route
+        if(!route.checkIpFormat())
+            // Check ip format
+            throw new IllegalStateException("Incorrect ip format");
+        else if(!route.checkIpNumbers())
+            // Check ip snippet
+            throw new IllegalStateException("An IP can only has numbers between 0 and 255 (inclusive)");
+
+        List<Rule> rulesAllowed = this.ruleRepository.findByAllow(true);
+        List<RuleEntity> ruleEntitiesAllowed = rulesAllowed.stream()
+                .map(this.ruleToRuleEntityMapper::mapTo)
+                .toList();
+
+        return ruleEntitiesAllowed.stream()
+                .anyMatch(ruleEntity -> ruleEntity.checkSourceIpAccess(route.getSourceIp())
+                && ruleEntity.checkDestinationIpAccess(route.getDestinationIp()));
     }
 }

@@ -1,5 +1,6 @@
 package com.sbz.ipfilter.domain.model;
 
+import com.sbz.ipfilter.domain.utils.IpChecker;
 import com.sbz.ipfilter.domain.utils.RuleChecker;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.util.Deque;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RuleEntity implements RuleChecker {
+public class RuleEntity implements RuleChecker, IpChecker {
     private String lowerSourceIp;
     private String upperSourceIp;
     private String lowerDestinationIp;
