@@ -37,6 +37,8 @@ public class RuleServiceImpl implements IRuleService {
     public RuleDto save(RuleDto ruleDto) {
         // Get RuleEntity of domain to validations
         RuleEntity ruleEntity = ruleDtoToRuleEntityMapper.mapTo(ruleDto);
+        // Get raw ips in ruleEntity used for validations
+        ruleEntity.getRawIps();
         // Check ip
         if(!ruleEntity.checkIpFormat())
             // Check ip format
@@ -86,7 +88,11 @@ public class RuleServiceImpl implements IRuleService {
                 .toList();
 
         return ruleEntitiesAllowed.stream()
-                .anyMatch(ruleEntity -> ruleEntity.checkSourceIpAccess(route.getSourceIp())
-                && ruleEntity.checkDestinationIpAccess(route.getDestinationIp()));
+                .anyMatch(ruleEntity -> {
+                    // Get raw ips in ruleEntity used for validations
+                    ruleEntity.getRawIps();
+                    return ruleEntity.checkSourceIpAccess(route.getSourceIp())
+                            && ruleEntity.checkDestinationIpAccess(route.getDestinationIp());
+                });
     }
 }

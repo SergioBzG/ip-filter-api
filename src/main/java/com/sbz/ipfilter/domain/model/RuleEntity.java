@@ -20,28 +20,39 @@ public class RuleEntity implements RuleChecker, IpChecker {
     private String lowerDestinationIp;
     private String upperDestinationIp;
     private Boolean allow;
+    Deque<Integer> lowerSourceRowIp;
+    Deque<Integer> upperSourceRowIp;
+    Deque<Integer> lowerDestinationRowIp;
+    Deque<Integer> upperDestinationRowIp;
+
+    public RuleEntity(String lowerSourceIp, String upperSourceIp, String lowerDestinationIp, String upperDestinationIp, Boolean allow) {
+        this.lowerSourceIp = lowerSourceIp;
+        this.upperSourceIp = upperSourceIp;
+        this.lowerDestinationIp = lowerDestinationIp;
+        this.upperDestinationIp = upperDestinationIp;
+        this.allow = allow;
+    }
 
     public Boolean checkSourceIpAccess(String sourceIp) {
-        Deque<Integer> lowerSourceRowIp = this.getRawIp(this.lowerSourceIp);
-        Deque<Integer> upperSourceRowIp = this.getRawIp(this.upperSourceIp);
         Deque<Integer> rowIp = this.getRawIp(sourceIp);
-        return this.checkIpInRange(rowIp, lowerSourceRowIp, upperSourceRowIp);
+        return this.checkIpInRange(rowIp, this.lowerSourceRowIp, this.upperSourceRowIp);
     }
 
     public Boolean checkDestinationIpAccess(String destinationIp) {
-        Deque<Integer> lowerDestinationRowIp = this.getRawIp(this.lowerDestinationIp);
-        Deque<Integer> upperDestinationRowIp = this.getRawIp(this.upperDestinationIp);
         Deque<Integer> rowIp = this.getRawIp(destinationIp);
-        return this.checkIpInRange(rowIp, lowerDestinationRowIp, upperDestinationRowIp);
+        return this.checkIpInRange(rowIp, this.lowerDestinationRowIp, this.upperDestinationRowIp);
     }
 
     public Boolean checkSourceAndDestinationIpRange() {
-        Deque<Integer> lowerSourceRowIp = this.getRawIp(this.lowerSourceIp);
-        Deque<Integer> upperSourceRowIp = this.getRawIp(this.upperSourceIp);
-        Deque<Integer> lowerDestinationRowIp = this.getRawIp(this.lowerDestinationIp);
-        Deque<Integer> upperDestinationRowIp = this.getRawIp(this.upperDestinationIp);
-        return this.checkIpRange(lowerSourceRowIp, upperSourceRowIp) &&
-                this.checkIpRange(lowerDestinationRowIp, upperDestinationRowIp);
+        return this.checkIpRange(this.lowerSourceRowIp, this.upperSourceRowIp) &&
+                this.checkIpRange(this.lowerDestinationRowIp, this.upperDestinationRowIp);
+    }
+
+    public void getRawIps() {
+        this.lowerSourceRowIp = this.getRawIp(this.lowerSourceIp);
+        this.upperSourceRowIp = this.getRawIp(this.upperSourceIp);
+        this.lowerDestinationRowIp = this.getRawIp(this.lowerDestinationIp);
+        this.upperDestinationRowIp = this.getRawIp(this.upperDestinationIp);
     }
 
     @Override
