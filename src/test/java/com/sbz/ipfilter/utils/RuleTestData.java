@@ -2,7 +2,7 @@ package com.sbz.ipfilter.utils;
 
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
 
-public class TestDataUtils {
+public class RuleTestData {
     public static Rule createTestRuleA() {
         return Rule.builder()
                 .id(1L)
@@ -44,6 +44,28 @@ public class TestDataUtils {
                 .lowerDestinationIp("54.255.22.wq")
                 .upperDestinationIp("70.43.23.75")
                 .allow(false)
+                .build();
+    }
+
+    public static Rule createTestRuleInvalidNumbersRange() {
+        return Rule.builder()
+                .id(5L)
+                .lowerSourceIp("323.12.98.890")
+                .upperSourceIp("124.1.87.67")
+                .lowerDestinationIp("54.255.22.123")
+                .upperDestinationIp("70.43.23.75")
+                .allow(true)
+                .build();
+    }
+
+    public static Rule createTestRuleWithInvalidRange() {
+        return Rule.builder()
+                .id(6L)
+                .lowerSourceIp("125.12.98.34")
+                .upperSourceIp("14.1.87.67")
+                .lowerDestinationIp("56.255.22.123")
+                .upperDestinationIp("1.43.23.75")
+                .allow(true)
                 .build();
     }
 }

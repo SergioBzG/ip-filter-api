@@ -2,7 +2,7 @@ package com.sbz.ipfilter.infrastructure.persistence.repository;
 
 
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
-import com.sbz.ipfilter.utils.TestDataUtils;
+import com.sbz.ipfilter.utils.RuleTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ class RuleRepositoryTests {
     // Create a Rule
     @Test
     public void testThatRuleCanBeCreated() {
-        Rule rule = TestDataUtils.createTestRuleA();
+        Rule rule = RuleTestData.createTestRuleA();
         Rule savedRule = underTest.save(rule);
         assertThat(savedRule).isEqualTo(rule);
     }
@@ -38,8 +38,8 @@ class RuleRepositoryTests {
     // Create and Read multiple Rules
     @Test
     public void testThatMultipleRulesCanBeReadAndRecall() {
-        Rule ruleA = TestDataUtils.createTestRuleA();
-        Rule ruleB = TestDataUtils.createTestRuleB();
+        Rule ruleA = RuleTestData.createTestRuleA();
+        Rule ruleB = RuleTestData.createTestRuleB();
         underTest.save(ruleA);
         underTest.save(ruleB);
         Iterable<Rule> rules = underTest.findAll();
@@ -51,7 +51,7 @@ class RuleRepositoryTests {
     // Delete a Rule by id
     @Test
     public void testThatRuleCanBeDeleted() {
-        Rule ruleA = TestDataUtils.createTestRuleA();
+        Rule ruleA = RuleTestData.createTestRuleA();
         underTest.save(ruleA);
         underTest.deleteById(ruleA.getId());
         Optional<Rule> optionalRule = underTest.findById(ruleA.getId());
@@ -60,7 +60,7 @@ class RuleRepositoryTests {
 
     @Test
     public void testThatGetIfRuleExistsOrNot() {
-        Rule ruleA = TestDataUtils.createTestRuleA();
+        Rule ruleA = RuleTestData.createTestRuleA();
         underTest.save(ruleA);
         boolean exists = underTest.existsById(ruleA.getId());
         assertTrue(exists);
@@ -68,9 +68,9 @@ class RuleRepositoryTests {
 
     @Test
     public void testThatGetRulesWithAllowEqualsTrue() {
-        Rule ruleA = TestDataUtils.createTestRuleA();
-        Rule ruleB = TestDataUtils.createTestRuleB();
-        Rule ruleC = TestDataUtils.createTestRuleC();
+        Rule ruleA = RuleTestData.createTestRuleA();
+        Rule ruleB = RuleTestData.createTestRuleB();
+        Rule ruleC = RuleTestData.createTestRuleC();
         underTest.save(ruleA);
         underTest.save(ruleB);
         underTest.save(ruleC);

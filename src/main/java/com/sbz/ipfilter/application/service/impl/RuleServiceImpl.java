@@ -28,7 +28,6 @@ public class RuleServiceImpl implements IRuleService {
     private final Mapper<Rule, RuleDto> ruleToRuleDtoMapper;
     private final Mapper<Rule, RuleEntity> ruleToRuleEntityMapper;
 
-
     public RuleServiceImpl(
             final RuleRepository ruleRepository,
             final Mapper<Rule, RuleDto> ruleToRuleDtoMapper,
@@ -80,7 +79,6 @@ public class RuleServiceImpl implements IRuleService {
             @CacheEvict(value="rules", allEntries = true),
             @CacheEvict(value="routes", allEntries = true)
     })
-    @CacheEvict(value = "rules", allEntries = true)
     @Override
     public void delete(Long id) throws RuleDoesNotExistException  {
         boolean exists = this.ruleRepository.existsById(id);
