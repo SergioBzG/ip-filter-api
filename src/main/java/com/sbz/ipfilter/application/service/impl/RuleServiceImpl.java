@@ -1,5 +1,8 @@
 package com.sbz.ipfilter.application.service.impl;
 
+import com.sbz.ipfilter.application.exceptions.IpFormatException;
+import com.sbz.ipfilter.application.exceptions.RuleDoesNotExistException;
+import com.sbz.ipfilter.application.exceptions.RuleFormatException;
 import com.sbz.ipfilter.application.service.IRuleService;
 import com.sbz.ipfilter.domain.model.Route;
 import com.sbz.ipfilter.domain.model.RuleEntity;
@@ -43,21 +46,22 @@ public class RuleServiceImpl implements IRuleService {
             @CacheEvict(value="routes", allEntries = true)
     })
     @Override
-    public RuleDto save(RuleDto ruleDto) {
+    public RuleDto save(RuleDto ruleDto) throws IpFormatException, RuleFormatException {
         // Get RuleEntity of domain to validations
         RuleEntity ruleEntity = ruleDtoToRuleEntityMapper.mapTo(ruleDto);
-        // Get raw ips in ruleEntity used for validations
-        ruleEntity.getRawIps();
         // Check ip
         if(!ruleEntity.checkIpFormat())
             // Check ip format
-            throw new IllegalStateException("Incorrect ip format");
+            throw new IpFormatException("Incorrect ip format");
         else if(!ruleEntity.checkIpNumbers())
             // Check ip snippet
-            throw new IllegalStateException("An IP can only has numbers between 0 and 255 (inclusive)");
-        else if(!ruleEntity.checkSourceAndDestinationIpRange())
+            throw new IpFormatException("An IP can only has numbers between 0 and 255 (inclusive)");
+
+        // Get raw ips in ruleEntity used for validations
+        ruleEntity.getRawIps();
+        if(!ruleEntity.checkSourceAndDestinationIpRange())
             // Check that ranges of ips are valid
-            throw new IllegalStateException("Invalid ip range");
+            throw new RuleFormatException("Invalid ip range");
 
         Rule ruleSaved = this.ruleRepository.save(
                 this.ruleToRuleDtoMapper.mapFrom(ruleDto)
@@ -78,23 +82,23 @@ public class RuleServiceImpl implements IRuleService {
     })
     @CacheEvict(value = "rules", allEntries = true)
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws RuleDoesNotExistException  {
         boolean exists = this.ruleRepository.existsById(id);
         if(!exists)
-            throw new IllegalStateException("Rule with id " + id + " does not exist");
+            throw new RuleDoesNotExistException(id);
         this.ruleRepository.deleteById(id);
     }
 
     @Cacheable(value = "routes")
     @Override
-    public boolean checkIpAccess(Route route) {
+    public boolean checkIpAccess(Route route) throws IpFormatException {
         // Check ips in route
         if(!route.checkIpFormat())
             // Check ip format
-            throw new IllegalStateException("Incorrect ip format");
+            throw new IpFormatException("Incorrect ip format");
         else if(!route.checkIpNumbers())
             // Check ip snippet
-            throw new IllegalStateException("An IP can only has numbers between 0 and 255 (inclusive)");
+            throw new IpFormatException("An IP can only has numbers between 0 and 255 (inclusive)");
 
         List<Rule> rulesAllowed = this.ruleRepository.findByAllow(true);
         List<RuleEntity> ruleEntitiesAllowed = rulesAllowed.stream()

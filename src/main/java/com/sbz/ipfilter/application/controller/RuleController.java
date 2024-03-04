@@ -1,5 +1,8 @@
 package com.sbz.ipfilter.application.controller;
 
+import com.sbz.ipfilter.application.exceptions.IpFormatException;
+import com.sbz.ipfilter.application.exceptions.RuleDoesNotExistException;
+import com.sbz.ipfilter.application.exceptions.RuleFormatException;
 import com.sbz.ipfilter.application.service.IRuleService;
 import com.sbz.ipfilter.domain.model.Route;
 import com.sbz.ipfilter.application.utils.Response;
@@ -27,23 +30,37 @@ public class RuleController {
     }
 
     @PostMapping
-    public ResponseEntity<RuleDto> createRule(@RequestBody RuleDto ruleDto) {
-        RuleDto ruleSaved = this.ruleService.save(ruleDto);
+    public ResponseEntity createRule(@RequestBody RuleDto ruleDto) {
+        RuleDto ruleSaved;
+        try {
+            ruleSaved = this.ruleService.save(ruleDto);
+        } catch (IpFormatException | RuleFormatException e) {
+            return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(ruleSaved, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity deleteRule(@PathVariable("id") Long id) {
-        ruleService.delete(id);
+        try {
+            ruleService.delete(id);
+        } catch (RuleDoesNotExistException e) {
+            return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/check")
     public ResponseEntity<Response> checkIp(@RequestBody Route route) {
-        boolean allow = this.ruleService.checkIpAccess(route);
+        boolean allow;
+        try {
+            allow = this.ruleService.checkIpAccess(route);
+        } catch (IpFormatException e) {
+            return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.BAD_REQUEST);
+        }
         if(allow)
-            return new ResponseEntity<>(new Response("allowed access", true), HttpStatus.OK);
-        return new ResponseEntity<>(new Response("denied access", false), HttpStatus.OK);
+            return new ResponseEntity<>(new Response("Allowed access", true), HttpStatus.OK);
+        return new ResponseEntity<>(new Response("Denied access", true), HttpStatus.OK);
     }
 
 }
