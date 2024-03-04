@@ -1,4 +1,4 @@
-package com.sbz.ipfilter.ipfilter;
+package com.sbz.ipfilter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
