@@ -56,7 +56,7 @@ class RuleServiceImplTest {
     void testThatSaveRuleThrowsIpFormatException() {
         RuleDto ruleDto = ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleIncorrectIpFormat());
         Exception exception = assertThrows(IpFormatException.class, () -> underTest.save(ruleDto));
-        assertEquals("Incorrect ip format", exception.getMessage());
+        assertEquals("Incorrect ip format (e.g. valid format : 123.32.4.212)", exception.getMessage());
     }
 
     @Test
@@ -140,7 +140,7 @@ class RuleServiceImplTest {
             throw new RuntimeException(e);
         }
         Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(routeEntity));
-        assertEquals("Incorrect ip format" ,exception.getMessage());
+        assertEquals("Incorrect ip format (e.g. valid format : 123.32.4.212)" ,exception.getMessage());
     }
 
     @Test

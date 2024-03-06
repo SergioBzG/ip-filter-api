@@ -17,7 +17,7 @@
 		<java.version>17</java.version>
 		<!-- sonar properties -->
 		<sonar.host.url>http://localhost:9000</sonar.host.url>
-		<sonar.token>squ_55c4700cf6d7f1adf9981b21692a05c4435d3e51</sonar.token>
+		<sonar.token>squ_94c54c88dce96ca6493034414ae56df9363cea24</sonar.token>
 		<sonar.exclusions>**/config/**,**/resources/**</sonar.exclusions>
 		<sonar.coverage.exclusions>**/config/**,**/*IpFilterApplication.java</sonar.coverage.exclusions>
 		<!-- JaCoCo Properties -->
