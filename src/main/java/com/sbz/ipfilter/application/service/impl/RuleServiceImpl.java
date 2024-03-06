@@ -1,10 +1,10 @@
 package com.sbz.ipfilter.application.service.impl;
 
-import com.sbz.ipfilter.application.exceptions.IpFormatException;
-import com.sbz.ipfilter.application.exceptions.RuleDoesNotExistException;
-import com.sbz.ipfilter.application.exceptions.RuleFormatException;
+import com.sbz.ipfilter.application.exception.IpFormatException;
+import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
+import com.sbz.ipfilter.application.exception.RuleFormatException;
 import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.domain.model.Route;
+import com.sbz.ipfilter.domain.model.RouteEntity;
 import com.sbz.ipfilter.domain.model.RuleEntity;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
@@ -51,7 +51,7 @@ public class RuleServiceImpl implements IRuleService {
         // Check ip
         if(!ruleEntity.checkIpFormat())
             // Check ip format
-            throw new IpFormatException("Incorrect ip format");
+            throw new IpFormatException("Incorrect ip format (e.g. valid format : 123.32.4.212)");
         else if(!ruleEntity.checkIpNumbers())
             // Check ip snippet
             throw new IpFormatException("An IP can only has numbers between 0 and 255 (inclusive)");
@@ -89,12 +89,12 @@ public class RuleServiceImpl implements IRuleService {
 
     @Cacheable(value = "routes")
     @Override
-    public boolean checkIpAccess(Route route) throws IpFormatException {
+    public boolean checkIpAccess(RouteEntity routeEntity) throws IpFormatException {
         // Check ips in route
-        if(!route.checkIpFormat())
+        if(!routeEntity.checkIpFormat())
             // Check ip format
-            throw new IpFormatException("Incorrect ip format");
-        else if(!route.checkIpNumbers())
+            throw new IpFormatException("Incorrect ip format (e.g. valid format : 123.32.4.212)");
+        else if(!routeEntity.checkIpNumbers())
             // Check ip snippet
             throw new IpFormatException("An IP can only has numbers between 0 and 255 (inclusive)");
 
@@ -107,8 +107,8 @@ public class RuleServiceImpl implements IRuleService {
                 .anyMatch(ruleEntity -> {
                     // Get raw ips in ruleEntity used for validations
                     ruleEntity.getRawIps();
-                    return ruleEntity.checkSourceIpAccess(route.getSourceIp())
-                            && ruleEntity.checkDestinationIpAccess(route.getDestinationIp());
+                    return ruleEntity.checkSourceIpAccess(routeEntity.getSourceIp())
+                            && ruleEntity.checkDestinationIpAccess(routeEntity.getDestinationIp());
                 });
     }
 }

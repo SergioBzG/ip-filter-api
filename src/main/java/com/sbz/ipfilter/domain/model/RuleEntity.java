@@ -25,25 +25,17 @@ public class RuleEntity implements RuleChecker, IpChecker {
     Deque<Integer> lowerDestinationRowIp;
     Deque<Integer> upperDestinationRowIp;
 
-    public RuleEntity(String lowerSourceIp, String upperSourceIp, String lowerDestinationIp, String upperDestinationIp, Boolean allow) {
-        this.lowerSourceIp = lowerSourceIp;
-        this.upperSourceIp = upperSourceIp;
-        this.lowerDestinationIp = lowerDestinationIp;
-        this.upperDestinationIp = upperDestinationIp;
-        this.allow = allow;
-    }
-
-    public Boolean checkSourceIpAccess(String sourceIp) {
+    public boolean checkSourceIpAccess(String sourceIp) {
         Deque<Integer> rowIp = this.getRawIp(sourceIp);
         return this.checkIpInRange(rowIp, this.lowerSourceRowIp, this.upperSourceRowIp);
     }
 
-    public Boolean checkDestinationIpAccess(String destinationIp) {
+    public boolean checkDestinationIpAccess(String destinationIp) {
         Deque<Integer> rowIp = this.getRawIp(destinationIp);
         return this.checkIpInRange(rowIp, this.lowerDestinationRowIp, this.upperDestinationRowIp);
     }
 
-    public Boolean checkSourceAndDestinationIpRange() {
+    public boolean checkSourceAndDestinationIpRange() {
         return this.checkIpRange(this.lowerSourceRowIp, this.upperSourceRowIp) &&
                 this.checkIpRange(this.lowerDestinationRowIp, this.upperDestinationRowIp);
     }
@@ -56,7 +48,7 @@ public class RuleEntity implements RuleChecker, IpChecker {
     }
 
     @Override
-    public Boolean checkIpInRange(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp) {
+    public boolean checkIpInRange(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp) {
         boolean lowerBoundChecked = false;
         boolean upperBoundChecked = false;
 
@@ -86,15 +78,15 @@ public class RuleEntity implements RuleChecker, IpChecker {
     }
 
     @Override
-    public Boolean checkIpFormat() {
-        return this.getLowerSourceIp().matches(this.IP_PATTERN)
-                && this.getUpperSourceIp().matches(this.IP_PATTERN)
-                && this.getLowerDestinationIp().matches(this.IP_PATTERN)
-                && this.getUpperDestinationIp().matches(this.IP_PATTERN);
+    public boolean checkIpFormat() {
+        return this.getLowerSourceIp().matches(IP_PATTERN)
+                && this.getUpperSourceIp().matches(IP_PATTERN)
+                && this.getLowerDestinationIp().matches(IP_PATTERN)
+                && this.getUpperDestinationIp().matches(IP_PATTERN);
     }
 
     @Override
-    public Boolean checkIpRange(Deque<Integer> lowerIp, Deque<Integer> upperIp) {
+    public boolean checkIpRange(Deque<Integer> lowerIp, Deque<Integer> upperIp) {
 
         while(!lowerIp.isEmpty()) {
             int firstPartOfLower = lowerIp.pollFirst();
@@ -110,7 +102,7 @@ public class RuleEntity implements RuleChecker, IpChecker {
     }
 
     @Override
-    public Boolean checkIpNumbers() {
+    public boolean checkIpNumbers() {
         String allNumberInIps = String.join(
                 ".",
                 this.lowerSourceIp,
@@ -120,6 +112,6 @@ public class RuleEntity implements RuleChecker, IpChecker {
         );
         return Arrays.stream(allNumberInIps.split("\\."))
                 .map(Integer::valueOf)
-                .noneMatch(num -> num < 0 || num > 255);
+                .noneMatch(num -> num > 255);
     }
 }

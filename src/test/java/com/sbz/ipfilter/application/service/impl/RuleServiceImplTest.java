@@ -1,10 +1,10 @@
 package com.sbz.ipfilter.application.service.impl;
 
-import com.sbz.ipfilter.application.exceptions.IpFormatException;
-import com.sbz.ipfilter.application.exceptions.RuleDoesNotExistException;
-import com.sbz.ipfilter.application.exceptions.RuleFormatException;
+import com.sbz.ipfilter.application.exception.IpFormatException;
+import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
+import com.sbz.ipfilter.application.exception.RuleFormatException;
 import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.domain.model.Route;
+import com.sbz.ipfilter.domain.model.RouteEntity;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
 import com.sbz.ipfilter.infrastructure.persistence.mapper.Mapper;
@@ -33,14 +33,14 @@ class RuleServiceImplTest {
     private final Mapper<Rule, RuleDto> ruleToRuleDtoMapper;
 
     @Autowired
-    public RuleServiceImplTest(IRuleService underTest, Mapper<Rule, RuleDto> ruleToRuleDtoMapper) {
+    RuleServiceImplTest(IRuleService underTest, Mapper<Rule, RuleDto> ruleToRuleDtoMapper) {
         this.underTest = underTest;
         this.ruleToRuleDtoMapper = ruleToRuleDtoMapper;
     }
 
     // Create Rule
     @Test
-    public void testThatSaveRuleIsSuccessful() {
+    void testThatSaveRuleIsSuccessful() {
         Rule rule = RuleTestData.createTestRuleA();
         RuleDto ruleDto = ruleToRuleDtoMapper.mapTo(rule);
         RuleDto savedRule;
@@ -53,14 +53,14 @@ class RuleServiceImplTest {
     }
 
     @Test
-    public void testThatSaveRuleThrowsIpFormatException() {
+    void testThatSaveRuleThrowsIpFormatException() {
         RuleDto ruleDto = ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleIncorrectIpFormat());
         Exception exception = assertThrows(IpFormatException.class, () -> underTest.save(ruleDto));
         assertEquals("Incorrect ip format", exception.getMessage());
     }
 
     @Test
-    public void testThatSaveRuleThrowsIpFormatExceptionByInvalidNumbersRange() {
+    void testThatSaveRuleThrowsIpFormatExceptionByInvalidNumbersRange() {
         RuleDto ruleDto = ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleInvalidNumbersRange());
         Exception exception = assertThrows(IpFormatException.class, () -> underTest.save(ruleDto));
         assertEquals("An IP can only has numbers between 0 and 255 (inclusive)", exception.getMessage());
@@ -68,7 +68,7 @@ class RuleServiceImplTest {
 
 
     @Test
-    public void testThatSaveRuleThrowsRuleFormatException() {
+    void testThatSaveRuleThrowsRuleFormatException() {
         RuleDto ruleDto = ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleWithInvalidRange());
         Exception exception = assertThrows(RuleFormatException.class, () -> underTest.save(ruleDto));
         assertEquals("Invalid ip range", exception.getMessage());
@@ -76,7 +76,7 @@ class RuleServiceImplTest {
 
     // List all rules
     @Test
-    public void testThatListRulesIsSuccessful() {
+    void testThatListRulesIsSuccessful() {
         try {
             underTest.save(ruleToRuleDtoMapper.mapTo(
                     RuleTestData.createTestRuleA())
@@ -94,35 +94,35 @@ class RuleServiceImplTest {
 
     // Delete rule by id
     @Test
-    public void testThatDeleteRuleThrowsDoesNotExistException() {
+    void testThatDeleteRuleThrowsDoesNotExistException() {
         long id = 1L;
         Exception exception = assertThrows(RuleDoesNotExistException.class, () -> underTest.delete(id));
         assertEquals("Rule with id " + id + " does not exist", exception.getMessage());
     }
 
     @Test
-    public void testThatCheckIpAccessReturnsTrue() {
-        Route route = RouteTestData.createRoute();
+    void testThatCheckIpAccessReturnsTrue() {
+        RouteEntity routeEntity = RouteTestData.createRoute();
         boolean allow;
         try {
             underTest.save(ruleToRuleDtoMapper.mapTo(
                     RuleTestData.createTestRuleA())
             );
-            allow = underTest.checkIpAccess(route);
+            allow = underTest.checkIpAccess(routeEntity);
         } catch (IpFormatException | RuleFormatException e) {
             throw new RuntimeException(e);
         }
         assertTrue(allow);
     }
     @Test
-    public void testThatCheckIpAccessReturnsFalse() {
-        Route route = RouteTestData.createRoute();
+    void testThatCheckIpAccessReturnsFalse() {
+        RouteEntity routeEntity = RouteTestData.createRoute();
         boolean allow;
         try {
             underTest.save(ruleToRuleDtoMapper.mapTo(
                     RuleTestData.createTestRuleB())
             );
-            allow = underTest.checkIpAccess(route);
+            allow = underTest.checkIpAccess(routeEntity);
         } catch (IpFormatException | RuleFormatException e) {
             throw new RuntimeException(e);
         }
@@ -130,8 +130,8 @@ class RuleServiceImplTest {
     }
 
     @Test
-    public void testThatCheckIpAccessThrowsIpFormatException() {
-        Route route = RouteTestData.createRouteInvalidFormat();
+    void testThatCheckIpAccessThrowsIpFormatException() {
+        RouteEntity routeEntity = RouteTestData.createRouteInvalidFormatSourceIp();
         try {
             underTest.save(ruleToRuleDtoMapper.mapTo(
                     RuleTestData.createTestRuleB())
@@ -139,13 +139,13 @@ class RuleServiceImplTest {
         } catch (IpFormatException | RuleFormatException e) {
             throw new RuntimeException(e);
         }
-        Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(route));
+        Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(routeEntity));
         assertEquals("Incorrect ip format" ,exception.getMessage());
     }
 
     @Test
-    public void testThatCheckIpAccessThrowsIpFormatExceptionByInvalidNumbersRange() {
-        Route route = RouteTestData.createRouteInvalidNumbersRange();
+    void testThatCheckIpAccessThrowsIpFormatExceptionByInvalidNumbersRange() {
+        RouteEntity routeEntity = RouteTestData.createRouteInvalidNumbersRange();
         try {
             underTest.save(ruleToRuleDtoMapper.mapTo(
                     RuleTestData.createTestRuleB())
@@ -153,7 +153,7 @@ class RuleServiceImplTest {
         } catch (IpFormatException | RuleFormatException e) {
             throw new RuntimeException(e);
         }
-        Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(route));
+        Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(routeEntity));
         assertEquals("An IP can only has numbers between 0 and 255 (inclusive)" ,exception.getMessage());
     }
 }

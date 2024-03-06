@@ -7,9 +7,9 @@ import java.util.LinkedList;
 public interface IpChecker {
     String IP_PATTERN = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}";
 
-    Boolean checkIpFormat();
+    boolean checkIpFormat();
 
-    Boolean checkIpNumbers();
+    boolean checkIpNumbers();
 
     default Deque<Integer> getRawIp(String ip) {
         Deque<Integer> rawIp = new LinkedList<>();

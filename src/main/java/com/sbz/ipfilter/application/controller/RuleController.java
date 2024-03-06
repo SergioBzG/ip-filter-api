@@ -1,10 +1,10 @@
 package com.sbz.ipfilter.application.controller;
 
-import com.sbz.ipfilter.application.exceptions.IpFormatException;
-import com.sbz.ipfilter.application.exceptions.RuleDoesNotExistException;
-import com.sbz.ipfilter.application.exceptions.RuleFormatException;
+import com.sbz.ipfilter.application.exception.IpFormatException;
+import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
+import com.sbz.ipfilter.application.exception.RuleFormatException;
 import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.domain.model.Route;
+import com.sbz.ipfilter.domain.model.RouteEntity;
 import com.sbz.ipfilter.application.utils.Response;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import org.springframework.data.domain.Page;
@@ -51,10 +51,10 @@ public class RuleController {
     }
 
     @PostMapping(path = "/check")
-    public ResponseEntity<Response> checkIp(@RequestBody Route route) {
+    public ResponseEntity<Response> checkIp(@RequestBody RouteEntity routeEntity) {
         boolean allow;
         try {
-            allow = this.ruleService.checkIpAccess(route);
+            allow = this.ruleService.checkIpAccess(routeEntity);
         } catch (IpFormatException e) {
             return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.BAD_REQUEST);
         }

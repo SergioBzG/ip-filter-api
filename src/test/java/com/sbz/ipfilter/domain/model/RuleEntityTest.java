@@ -45,8 +45,15 @@ class RuleEntityTest {
     }
 
     @Test
-    void testThatCheckSourceAndDestinationIpRangeReturnsFalse() {
-        underTest = RuleEntityTestData.createTestRuleEntityWithInvalidRange();
+    void testThatCheckSourceAndDestinationIpRangeReturnsFalseBySourceIp() {
+        underTest = RuleEntityTestData.createTestRuleEntityWithInvalidRangeBySourceIp();
+        underTest.getRawIps();
+        assertFalse(underTest.checkSourceAndDestinationIpRange());
+    }
+
+    @Test
+    void testThatCheckSourceAndDestinationIpRangeReturnsFalseByDestinationIp() {
+        underTest = RuleEntityTestData.createTestRuleEntityWithInvalidRangeByDestinationIp();
         underTest.getRawIps();
         assertFalse(underTest.checkSourceAndDestinationIpRange());
     }
@@ -79,9 +86,35 @@ class RuleEntityTest {
         underTest.getRawIps();
         assertTrue(
                 underTest.checkIpInRange(
-                        RuleEntityTestData.createRawIp(),
+                        RuleEntityTestData.createRawIp1(),
                         underTest.getLowerSourceRowIp(),
                         underTest.getUpperSourceRowIp()
+                )
+        );
+    }
+
+    @Test
+    void testThatCheckIpInRangeReturnsTrueQuickly() {
+        underTest = RuleEntityTestData.createTestRuleEntity();
+        underTest.getRawIps();
+        assertTrue(
+                underTest.checkIpInRange(
+                        RuleEntityTestData.createRawIp2(),
+                        underTest.getLowerSourceRowIp(),
+                        underTest.getUpperSourceRowIp()
+                )
+        );
+    }
+
+    @Test
+    void testThatCheckIpInRangeReturnsTrueSlowly() {
+        underTest = RuleEntityTestData.createTestRuleEntity();
+        underTest.getRawIps();
+        assertTrue(
+                underTest.checkIpInRange(
+                        RuleEntityTestData.createRawIp3(),
+                        underTest.getLowerDestinationRowIp(),
+                        underTest.getUpperDestinationRowIp()
                 )
         );
     }
@@ -92,7 +125,7 @@ class RuleEntityTest {
         underTest.getRawIps();
         assertFalse(
                 underTest.checkIpInRange(
-                        RuleEntityTestData.createRawIp(),
+                        RuleEntityTestData.createRawIp1(),
                         underTest.getLowerDestinationRowIp(),
                         underTest.getUpperDestinationRowIp()
                 )
@@ -106,8 +139,24 @@ class RuleEntityTest {
     }
 
     @Test
-    void testThatCheckIpFormatReturnsFalse() {
-        underTest = RuleEntityTestData.createTestRuleEntityIncorrectIpFormat();
+    void testThatCheckIpFormatReturnsFalseByLowerSource() {
+        underTest = RuleEntityTestData.createTestRuleEntityIncorrectIpFormatByLowerSource();
+        assertFalse(underTest.checkIpFormat());
+    }
+
+    @Test
+    void testThatCheckIpFormatReturnsFalseByUpperSource() {
+        underTest = RuleEntityTestData.createTestRuleEntityIncorrectIpFormatByUpperSource();
+        assertFalse(underTest.checkIpFormat());
+    }
+    @Test
+    void testThatCheckIpFormatReturnsFalseByLowerDestination() {
+        underTest = RuleEntityTestData.createTestRuleEntityIncorrectIpFormatByLowerDestination();
+        assertFalse(underTest.checkIpFormat());
+    }
+    @Test
+    void testThatCheckIpFormatReturnsFalseByUpperDestination() {
+        underTest = RuleEntityTestData.createTestRuleEntityIncorrectIpFormatByUpperDestination();
         assertFalse(underTest.checkIpFormat());
     }
 
@@ -121,7 +170,15 @@ class RuleEntityTest {
 
     @Test
     void testThatCheckIpRangeReturnsFalse() {
-        underTest = RuleEntityTestData.createTestRuleEntityWithInvalidRange();
+        underTest = RuleEntityTestData.createTestRuleEntityWithInvalidRangeBySourceIp();
+        underTest.getRawIps();
+        assertFalse(underTest.checkIpRange(underTest.lowerSourceRowIp, underTest.upperSourceRowIp));
+        assertFalse(underTest.checkIpRange(underTest.lowerDestinationRowIp, underTest.upperDestinationRowIp));
+    }
+
+    @Test
+    void testThatCheckIpRangeReturnsFalseBySameSourceDestination() {
+        underTest = RuleEntityTestData.createTestRuleEntityWithInvalidRangeTheSame();
         underTest.getRawIps();
         assertFalse(underTest.checkIpRange(underTest.lowerSourceRowIp, underTest.upperSourceRowIp));
         assertFalse(underTest.checkIpRange(underTest.lowerDestinationRowIp, underTest.upperDestinationRowIp));

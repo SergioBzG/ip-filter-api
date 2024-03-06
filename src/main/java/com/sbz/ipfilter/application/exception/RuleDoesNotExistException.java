@@ -1,4 +1,4 @@
-package com.sbz.ipfilter.application.exceptions;
+package com.sbz.ipfilter.application.exception;
 
 public class RuleDoesNotExistException extends Exception {
     public RuleDoesNotExistException(Long id) {

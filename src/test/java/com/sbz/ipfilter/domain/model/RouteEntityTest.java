@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RouteTest {
-    private Route underTest;
+class RouteEntityTest {
+    private RouteEntity underTest;
 
     @Test
     void testThatCheckIpFormatReturnsTrue() {
@@ -15,8 +15,14 @@ class RouteTest {
     }
 
     @Test
-    void testThatCheckIpFormatReturnsFalse() {
-        underTest = RouteTestData.createRouteInvalidFormat();
+    void testThatCheckIpFormatReturnsFalseBySourceIp() {
+        underTest = RouteTestData.createRouteInvalidFormatSourceIp();
+        assertFalse(underTest.checkIpFormat());
+    }
+
+    @Test
+    void testThatCheckIpFormatReturnsFalseByDestinationIp() {
+        underTest = RouteTestData.createRouteInvalidFormatDestinationIp();
         assertFalse(underTest.checkIpFormat());
     }
 

@@ -32,7 +32,7 @@ class RuleControllerTest {
     private final MockMvc mockMvc;
 
     @Autowired
-    public RuleControllerTest(IRuleService ruleService,
+    RuleControllerTest(IRuleService ruleService,
                               Mapper<Rule, RuleDto> ruleToRuleDtoMapper,
                               ObjectMapper objectMapper,
                               MockMvc mockMvc
@@ -45,7 +45,7 @@ class RuleControllerTest {
 
     // Check that [POST]/rules endpoint response with 201 http code
     @Test
-    public void testThatCreateRuleSuccessfullyReturnsHttp201Created() throws Exception {
+    void testThatCreateRuleSuccessfullyReturnsHttp201Created() throws Exception {
         String ruleJson = objectMapper.writeValueAsString(RuleTestData.createTestRuleA());
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/rules")
@@ -58,7 +58,7 @@ class RuleControllerTest {
 
     // Check that [POST]/rules endpoint response with the rule created
     @Test
-    public void testThatCreateRuleSuccessfullyReturnsRuleCreated() throws Exception {
+    void testThatCreateRuleSuccessfullyReturnsRuleCreated() throws Exception {
         Rule rule = RuleTestData.createTestRuleA();
         String ruleJson = objectMapper.writeValueAsString(rule);
         mockMvc.perform(
@@ -82,7 +82,7 @@ class RuleControllerTest {
 
     // Check that [POST]/rules endpoint response with 400 http code
     @Test
-    public void testThatCreateRuleReturnsHttp400BadRequest() throws Exception {
+    void testThatCreateRuleReturnsHttp400BadRequest() throws Exception {
         String ruleJson = objectMapper.writeValueAsString(RuleTestData.createTestRuleIncorrectIpFormat());
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/rules")
@@ -99,7 +99,7 @@ class RuleControllerTest {
 
     // Check that [GET]/rules endpoint response with 200 http code
     @Test
-    public void testThatListRulesReturnsHttp200Ok() throws Exception {
+    void testThatListRulesReturnsHttp200Ok() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/rules")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ class RuleControllerTest {
 
     // Check that [DELETE]/rules/{id} endpoint response with 204 http code
     @Test
-    public void testThatDeleteRuleReturnsHttp204NoContent() throws Exception {
+    void testThatDeleteRuleReturnsHttp204NoContent() throws Exception {
         RuleDto rule = ruleService.save(
                 ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleA())
         );
@@ -124,7 +124,7 @@ class RuleControllerTest {
 
     // Check that [DELETE]/rules/{id} endpoint response with 404 http code
     @Test
-    public void testThatDeleteRuleReturnsHttp404NoFound() throws Exception {
+    void testThatDeleteRuleReturnsHttp404NoFound() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/rules/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -163,7 +163,7 @@ class RuleControllerTest {
         ruleService.save(
                 ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleA())
         );
-        String routeJson = objectMapper.writeValueAsString(RouteTestData.createRouteInvalidFormat());
+        String routeJson = objectMapper.writeValueAsString(RouteTestData.createRouteInvalidFormatSourceIp());
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/rules/check")
                         .contentType(MediaType.APPLICATION_JSON)
