@@ -1,6 +1,7 @@
 package com.sbz.ipfilter.domain.model;
 
 import com.sbz.ipfilter.domain.utils.IpChecker;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,11 @@ import java.util.Arrays;
 @NoArgsConstructor
 @Builder
 public class RouteEntity implements IpChecker {
+
+    @NotBlank(message = "a source ip is required")
     private String sourceIp;
+
+    @NotBlank(message = "a destination ip is required")
     private String destinationIp;
 
     @Override

@@ -7,6 +7,8 @@ import com.sbz.ipfilter.application.service.IRuleService;
 import com.sbz.ipfilter.domain.model.RouteEntity;
 import com.sbz.ipfilter.application.utils.Response;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
+import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,13 +26,13 @@ public class RuleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<RuleDto>> getRules(Pageable pageable) {
+    public ResponseEntity<Page<RuleDto>> getRules(@ParameterObject Pageable pageable) {
         Page<RuleDto> rules = this.ruleService.findAll(pageable);
         return new ResponseEntity<>(rules, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity createRule(@RequestBody RuleDto ruleDto) {
+    public ResponseEntity createRule(@Valid @RequestBody RuleDto ruleDto) {
         RuleDto ruleSaved;
         try {
             ruleSaved = this.ruleService.save(ruleDto);
@@ -51,7 +53,7 @@ public class RuleController {
     }
 
     @PostMapping(path = "/check")
-    public ResponseEntity<Response> checkIp(@RequestBody RouteEntity routeEntity) {
+    public ResponseEntity<Response> checkIp(@Valid @RequestBody RouteEntity routeEntity) {
         boolean allow;
         try {
             allow = this.ruleService.checkIpAccess(routeEntity);
