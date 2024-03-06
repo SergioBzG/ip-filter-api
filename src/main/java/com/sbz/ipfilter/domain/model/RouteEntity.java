@@ -12,18 +12,18 @@ import java.util.Arrays;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Route implements IpChecker {
+public class RouteEntity implements IpChecker {
     private String sourceIp;
     private String destinationIp;
 
     @Override
-    public Boolean checkIpFormat() {
-        return this.sourceIp.matches(this.IP_PATTERN)
-                && this.destinationIp.matches(this.IP_PATTERN);
+    public boolean checkIpFormat() {
+        return this.sourceIp.matches(IP_PATTERN)
+                && this.destinationIp.matches(IP_PATTERN);
     }
 
     @Override
-    public Boolean checkIpNumbers() {
+    public boolean checkIpNumbers() {
         String allNumberInIps = String.join(
                 ".",
                 this.sourceIp,
@@ -31,6 +31,6 @@ public class Route implements IpChecker {
         );
         return Arrays.stream(allNumberInIps.split("\\."))
                 .map(Integer::valueOf)
-                .noneMatch(num -> num < 0 || num > 255);
+                .noneMatch(num -> num > 255);
     }
 }
