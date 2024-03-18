@@ -1,8 +1,8 @@
 package com.sbz.ipfilter.infrastructure.persistence.repository;
 
 
-import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
-import com.sbz.ipfilter.utils.RuleTestData;
+import com.sbz.ipfilter.infrastructure.persistence.entity.RuleEntity;
+import com.sbz.ipfilter.utils.RuleEntityTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,55 +30,55 @@ class RuleRepositoryTests {
     // Create a Rule
     @Test
     void testThatRuleCanBeCreated() {
-        Rule rule = RuleTestData.createTestRuleA();
-        Rule savedRule = underTest.save(rule);
-        assertThat(savedRule).isEqualTo(rule);
+        RuleEntity ruleEntity = RuleEntityTestData.createTestRuleEntityA();
+        RuleEntity savedRuleEntity = underTest.save(ruleEntity);
+        assertThat(savedRuleEntity).isEqualTo(ruleEntity);
     }
 
     // Create and Read multiple Rules
     @Test
     void testThatMultipleRulesCanBeReadAndRecall() {
-        Rule ruleA = RuleTestData.createTestRuleA();
-        Rule ruleB = RuleTestData.createTestRuleB();
-        underTest.save(ruleA);
-        underTest.save(ruleB);
-        Iterable<Rule> rules = underTest.findAll();
+        RuleEntity ruleEntityA = RuleEntityTestData.createTestRuleEntityA();
+        RuleEntity ruleEntityB = RuleEntityTestData.createTestRuleEntityB();
+        underTest.save(ruleEntityA);
+        underTest.save(ruleEntityB);
+        Iterable<RuleEntity> rules = underTest.findAll();
         assertThat(rules)
                 .hasSize(2)
-                .containsExactly(ruleA, ruleB);
+                .containsExactly(ruleEntityA, ruleEntityB);
     }
 
     // Delete a Rule by id
     @Test
     void testThatRuleCanBeDeleted() {
-        Rule ruleA = RuleTestData.createTestRuleA();
-        underTest.save(ruleA);
-        underTest.deleteById(ruleA.getId());
-        Optional<Rule> optionalRule = underTest.findById(ruleA.getId());
+        RuleEntity ruleEntityA = RuleEntityTestData.createTestRuleEntityA();
+        underTest.save(ruleEntityA);
+        underTest.deleteById(ruleEntityA.getId());
+        Optional<RuleEntity> optionalRule = underTest.findById(ruleEntityA.getId());
         assertThat(optionalRule).isEmpty();
     }
 
     @Test
     void testThatGetIfRuleExistsOrNot() {
-        Rule ruleA = RuleTestData.createTestRuleA();
-        underTest.save(ruleA);
-        boolean exists = underTest.existsById(ruleA.getId());
+        RuleEntity ruleEntityA = RuleEntityTestData.createTestRuleEntityA();
+        underTest.save(ruleEntityA);
+        boolean exists = underTest.existsById(ruleEntityA.getId());
         assertTrue(exists);
     }
 
     @Test
     void testThatGetRulesWithAllowEqualsTrue() {
-        Rule ruleA = RuleTestData.createTestRuleA();
-        Rule ruleB = RuleTestData.createTestRuleB();
-        Rule ruleC = RuleTestData.createTestRuleC();
-        underTest.save(ruleA);
-        underTest.save(ruleB);
-        underTest.save(ruleC);
+        RuleEntity ruleEntityA = RuleEntityTestData.createTestRuleEntityA();
+        RuleEntity ruleEntityB = RuleEntityTestData.createTestRuleEntityB();
+        RuleEntity ruleEntityC = RuleEntityTestData.createTestRuleEntityC();
+        underTest.save(ruleEntityA);
+        underTest.save(ruleEntityB);
+        underTest.save(ruleEntityC);
 
-        List<Rule> savedRules = underTest.findByAllow(true);
-        assertThat(savedRules)
+        List<RuleEntity> savedRuleEntities = underTest.findByAllow(true);
+        assertThat(savedRuleEntities)
                 .hasSize(2)
-                .containsExactly(ruleA, ruleB);
+                .containsExactly(ruleEntityA, ruleEntityB);
     }
 
 }

@@ -1,7 +1,7 @@
-package com.sbz.ipfilter.domain.model;
+package com.sbz.ipfilter.core.domain.model;
 
-import com.sbz.ipfilter.domain.utils.IpChecker;
-import com.sbz.ipfilter.domain.utils.RuleChecker;
+import com.sbz.ipfilter.core.usecase.utils.IpChecker;
+import com.sbz.ipfilter.core.usecase.utils.RuleChecker;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,16 +14,16 @@ import java.util.Deque;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RuleEntity implements RuleChecker, IpChecker {
+public class Rule implements RuleChecker, IpChecker {
     private String lowerSourceIp;
     private String upperSourceIp;
     private String lowerDestinationIp;
     private String upperDestinationIp;
     private Boolean allow;
-    Deque<Integer> lowerSourceRowIp;
-    Deque<Integer> upperSourceRowIp;
-    Deque<Integer> lowerDestinationRowIp;
-    Deque<Integer> upperDestinationRowIp;
+    private Deque<Integer> lowerSourceRowIp;
+    private Deque<Integer> upperSourceRowIp;
+    private Deque<Integer> lowerDestinationRowIp;
+    private Deque<Integer> upperDestinationRowIp;
 
     public boolean checkSourceIpAccess(String sourceIp) {
         Deque<Integer> rowIp = this.getRawIp(sourceIp);

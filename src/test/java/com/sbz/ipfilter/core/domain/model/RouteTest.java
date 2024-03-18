@@ -1,12 +1,12 @@
-package com.sbz.ipfilter.domain.model;
+package com.sbz.ipfilter.core.domain.model;
 
 import com.sbz.ipfilter.utils.RouteTestData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RouteEntityTest {
-    private RouteEntity underTest;
+class RouteTest {
+    private Route underTest;
 
     @Test
     void testThatCheckIpFormatReturnsTrue() {

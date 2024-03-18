@@ -1,14 +1,11 @@
 package com.sbz.ipfilter.utils;
 
-import com.sbz.ipfilter.domain.model.RuleEntity;
-
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
+import com.sbz.ipfilter.infrastructure.persistence.entity.RuleEntity;
 
 public class RuleEntityTestData {
-    public static RuleEntity createTestRuleEntity() {
+    public static RuleEntity createTestRuleEntityA() {
         return RuleEntity.builder()
+                .id(1L)
                 .lowerSourceIp("23.12.98.3")
                 .upperSourceIp("66.34.87.129")
                 .lowerDestinationIp("55.35.74.32")
@@ -17,49 +14,42 @@ public class RuleEntityTestData {
                 .build();
     }
 
-    public static RuleEntity createTestRuleEntityIncorrectIpFormatByLowerSource() {
+    public static RuleEntity createTestRuleEntityB() {
         return RuleEntity.builder()
+                .id(2L)
+                .lowerSourceIp("123.34.24.255")
+                .upperSourceIp("144.234.123.32")
+                .lowerDestinationIp("34.123.54.12")
+                .upperDestinationIp("245.123.03.0")
+                .allow(true)
+                .build();
+    }
+
+    public static RuleEntity createTestRuleEntityC() {
+        return RuleEntity.builder()
+                .id(3L)
+                .lowerSourceIp("23.12.98.3")
+                .upperSourceIp("56.1.87.0")
+                .lowerDestinationIp("54.255.47.98")
+                .upperDestinationIp("70.43.23.75")
+                .allow(false)
+                .build();
+    }
+
+    public static RuleEntity createTestRuleEntityIncorrectIpFormat() {
+        return RuleEntity.builder()
+                .id(4L)
                 .lowerSourceIp("23.12.98.we")
-                .upperSourceIp("56.1.87.34")
-                .lowerDestinationIp("54.255.22.123")
+                .upperSourceIp("56.1.87")
+                .lowerDestinationIp("54.255.22.wq")
                 .upperDestinationIp("70.43.23.75")
                 .allow(false)
                 .build();
     }
-
-    public static RuleEntity createTestRuleEntityIncorrectIpFormatByUpperSource() {
-        return RuleEntity.builder()
-                .lowerSourceIp("23.12.98.23")
-                .upperSourceIp("cdf.1.87.34")
-                .lowerDestinationIp("54.255.22.123")
-                .upperDestinationIp("70.43.23.75")
-                .allow(false)
-                .build();
-    }
-
-    public static RuleEntity createTestRuleEntityIncorrectIpFormatByLowerDestination() {
-        return RuleEntity.builder()
-                .lowerSourceIp("23.12.98.23")
-                .upperSourceIp("234.1.87.34")
-                .lowerDestinationIp("ef.255.22.123")
-                .upperDestinationIp("70.43.23.75")
-                .allow(false)
-                .build();
-    }
-
-    public static RuleEntity createTestRuleEntityIncorrectIpFormatByUpperDestination() {
-        return RuleEntity.builder()
-                .lowerSourceIp("23.12.98.23")
-                .upperSourceIp("234.1.87.34")
-                .lowerDestinationIp("23.255.22.123")
-                .upperDestinationIp("wq.43.23.75")
-                .allow(false)
-                .build();
-    }
-
 
     public static RuleEntity createTestRuleEntityInvalidNumbersRange() {
         return RuleEntity.builder()
+                .id(5L)
                 .lowerSourceIp("323.12.98.890")
                 .upperSourceIp("124.1.87.67")
                 .lowerDestinationIp("54.255.22.123")
@@ -68,8 +58,9 @@ public class RuleEntityTestData {
                 .build();
     }
 
-    public static RuleEntity createTestRuleEntityWithInvalidRangeBySourceIp() {
+    public static RuleEntity createTestRuleEntityWithInvalidRange() {
         return RuleEntity.builder()
+                .id(6L)
                 .lowerSourceIp("125.12.98.34")
                 .upperSourceIp("14.1.87.67")
                 .lowerDestinationIp("56.255.22.123")
@@ -77,37 +68,5 @@ public class RuleEntityTestData {
                 .allow(true)
                 .build();
     }
-
-    public static RuleEntity createTestRuleEntityWithInvalidRangeTheSame() {
-        return RuleEntity.builder()
-                .lowerSourceIp("125.12.98.34")
-                .upperSourceIp("125.12.98.34")
-                .lowerDestinationIp("56.255.22.123")
-                .upperDestinationIp("56.255.22.123")
-                .allow(true)
-                .build();
-    }
-
-    public static RuleEntity createTestRuleEntityWithInvalidRangeByDestinationIp() {
-        return RuleEntity.builder()
-                .lowerSourceIp("12.12.98.34")
-                .upperSourceIp("141.1.87.67")
-                .lowerDestinationIp("56.255.22.123")
-                .upperDestinationIp("1.43.23.75")
-                .allow(true)
-                .build();
-    }
-
-    public static Deque<Integer> createRawIp1() {
-        return new LinkedList<>(Arrays.asList(23,12,98,3));
-    }
-
-    public static Deque<Integer> createRawIp2() {
-        return new LinkedList<>(Arrays.asList(30,12,98,3));
-    }
-
-    public static Deque<Integer> createRawIp3() {
-        return new LinkedList<>(Arrays.asList(55,35,74,32));
-    }
-
 }
+

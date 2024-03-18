@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "rule", uniqueConstraints = {@UniqueConstraint(columnNames = {"lowerSourceIp", "upperSourceIp", "lowerDestinationIp", "upperDestinationIp"})})
-public class Rule {
+public class RuleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

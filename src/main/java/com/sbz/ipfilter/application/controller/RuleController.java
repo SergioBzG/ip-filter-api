@@ -4,7 +4,7 @@ import com.sbz.ipfilter.application.exception.IpFormatException;
 import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
 import com.sbz.ipfilter.application.exception.RuleFormatException;
 import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.domain.model.RouteEntity;
+import com.sbz.ipfilter.core.domain.model.Route;
 import com.sbz.ipfilter.application.utils.Response;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
 import jakarta.validation.Valid;
@@ -53,10 +53,10 @@ public class RuleController {
     }
 
     @PostMapping(path = "/check")
-    public ResponseEntity<Response> checkIp(@Valid @RequestBody RouteEntity routeEntity) {
+    public ResponseEntity<Response> checkIp(@Valid @RequestBody Route route) {
         boolean allow;
         try {
-            allow = this.ruleService.checkIpAccess(routeEntity);
+            allow = this.ruleService.checkIpAccess(route);
         } catch (IpFormatException e) {
             return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.BAD_REQUEST);
         }

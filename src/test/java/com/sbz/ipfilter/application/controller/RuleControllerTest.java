@@ -3,10 +3,10 @@ package com.sbz.ipfilter.application.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sbz.ipfilter.application.service.IRuleService;
 import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
-import com.sbz.ipfilter.infrastructure.persistence.entity.Rule;
+import com.sbz.ipfilter.infrastructure.persistence.entity.RuleEntity;
 import com.sbz.ipfilter.infrastructure.persistence.mapper.Mapper;
 import com.sbz.ipfilter.utils.RouteTestData;
-import com.sbz.ipfilter.utils.RuleTestData;
+import com.sbz.ipfilter.utils.RuleEntityTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +27,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 class RuleControllerTest {
 
     private final IRuleService ruleService;
-    private final Mapper<Rule, RuleDto> ruleToRuleDtoMapper;
+    private final Mapper<RuleEntity, RuleDto> ruleEntityToRuleDtoMapper;
     private final ObjectMapper objectMapper;
     private final MockMvc mockMvc;
 
     @Autowired
     RuleControllerTest(IRuleService ruleService,
-                              Mapper<Rule, RuleDto> ruleToRuleDtoMapper,
-                              ObjectMapper objectMapper,
-                              MockMvc mockMvc
+                       Mapper<RuleEntity, RuleDto> ruleEntityToRuleDtoMapper,
+                       ObjectMapper objectMapper,
+                       MockMvc mockMvc
     ) {
         this.ruleService = ruleService;
-        this.ruleToRuleDtoMapper = ruleToRuleDtoMapper;
+        this.ruleEntityToRuleDtoMapper = ruleEntityToRuleDtoMapper;
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
     }
@@ -46,7 +46,7 @@ class RuleControllerTest {
     // Check that [POST]/rules endpoint response with 201 http code
     @Test
     void testThatCreateRuleSuccessfullyReturnsHttp201Created() throws Exception {
-        String ruleJson = objectMapper.writeValueAsString(RuleTestData.createTestRuleA());
+        String ruleJson = objectMapper.writeValueAsString(RuleEntityTestData.createTestRuleEntityA());
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/rules")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,8 +59,8 @@ class RuleControllerTest {
     // Check that [POST]/rules endpoint response with the rule created
     @Test
     void testThatCreateRuleSuccessfullyReturnsRuleCreated() throws Exception {
-        Rule rule = RuleTestData.createTestRuleA();
-        String ruleJson = objectMapper.writeValueAsString(rule);
+        RuleEntity ruleEntity = RuleEntityTestData.createTestRuleEntityA();
+        String ruleJson = objectMapper.writeValueAsString(ruleEntity);
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/rules")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -68,13 +68,13 @@ class RuleControllerTest {
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").isNumber()
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$.lowerSourceIp").value(rule.getLowerSourceIp())
+                MockMvcResultMatchers.jsonPath("$.lowerSourceIp").value(ruleEntity.getLowerSourceIp())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$.upperSourceIp").value(rule.getUpperSourceIp())
+                MockMvcResultMatchers.jsonPath("$.upperSourceIp").value(ruleEntity.getUpperSourceIp())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$.lowerDestinationIp").value(rule.getLowerDestinationIp())
+                MockMvcResultMatchers.jsonPath("$.lowerDestinationIp").value(ruleEntity.getLowerDestinationIp())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$.upperDestinationIp").value(rule.getUpperDestinationIp())
+                MockMvcResultMatchers.jsonPath("$.upperDestinationIp").value(ruleEntity.getUpperDestinationIp())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.allow").isBoolean()
         );
@@ -83,7 +83,7 @@ class RuleControllerTest {
     // Check that [POST]/rules endpoint response with 400 http code
     @Test
     void testThatCreateRuleReturnsHttp400BadRequest() throws Exception {
-        String ruleJson = objectMapper.writeValueAsString(RuleTestData.createTestRuleIncorrectIpFormat());
+        String ruleJson = objectMapper.writeValueAsString(RuleEntityTestData.createTestRuleEntityIncorrectIpFormat());
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/rules")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ class RuleControllerTest {
     @Test
     void testThatDeleteRuleReturnsHttp204NoContent() throws Exception {
         RuleDto rule = ruleService.save(
-                ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleA())
+                ruleEntityToRuleDtoMapper.mapTo(RuleEntityTestData.createTestRuleEntityA())
         );
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/rules/" + rule.getId())
@@ -141,7 +141,7 @@ class RuleControllerTest {
     @Test
     void testThatCheckIpReturnsHttp200Ok() throws Exception {
         ruleService.save(
-                ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleA())
+                ruleEntityToRuleDtoMapper.mapTo(RuleEntityTestData.createTestRuleEntityA())
         );
         String routeJson = objectMapper.writeValueAsString(RouteTestData.createRoute());
         mockMvc.perform(
@@ -161,7 +161,7 @@ class RuleControllerTest {
     @Test
     void testThatCheckIpReturnsHttp400BadRequest() throws Exception {
         ruleService.save(
-                ruleToRuleDtoMapper.mapTo(RuleTestData.createTestRuleA())
+                ruleEntityToRuleDtoMapper.mapTo(RuleEntityTestData.createTestRuleEntityA())
         );
         String routeJson = objectMapper.writeValueAsString(RouteTestData.createRouteInvalidFormatSourceIp());
         mockMvc.perform(

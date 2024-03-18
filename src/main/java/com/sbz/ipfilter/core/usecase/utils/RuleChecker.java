@@ -1,4 +1,4 @@
-package com.sbz.ipfilter.domain.utils;
+package com.sbz.ipfilter.core.usecase.utils;
 
 
 import java.util.Deque;

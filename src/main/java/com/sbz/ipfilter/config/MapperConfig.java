@@ -1,4 +1,4 @@
-package com.sbz.ipfilter.infrastructure.config;
+package com.sbz.ipfilter.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
