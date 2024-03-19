@@ -1,10 +1,8 @@
 package com.sbz.ipfilter.application.validator.impl;
 
 import com.sbz.ipfilter.application.dto.RouteDto;
-import com.sbz.ipfilter.application.dto.RuleDto;
 import com.sbz.ipfilter.application.exception.InvalidOrMissingDataException;
 import com.sbz.ipfilter.utils.RouteDtoTestData;
-import com.sbz.ipfilter.utils.RuleDtoTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.validation.BindingResult;
