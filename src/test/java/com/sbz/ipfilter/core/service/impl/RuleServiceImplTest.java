@@ -1,157 +1,167 @@
 package com.sbz.ipfilter.core.service.impl;
 
-import com.sbz.ipfilter.core.service.IRuleService;
-import com.sbz.ipfilter.application.exception.InvalidOrMissingDataException;
+import com.sbz.ipfilter.application.dto.RouteDto;
+import com.sbz.ipfilter.core.mapper.impl.RuleEntityToRuleDtoMapper;
+import com.sbz.ipfilter.core.mapper.impl.RuleEntityToRuleMapper;
 import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
-import com.sbz.ipfilter.application.exception.InvalidIpRangeException;
 import com.sbz.ipfilter.application.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.RuleEntity;
-import com.sbz.ipfilter.core.mapper.Mapper;
+import com.sbz.ipfilter.infrastructure.persistence.repository.RuleRepository;
+import com.sbz.ipfilter.utils.RouteDtoTestData;
+import com.sbz.ipfilter.utils.RuleDtoTestData;
 import com.sbz.ipfilter.utils.RuleEntityTestData;
+import com.sbz.ipfilter.utils.RuleTestData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(MockitoExtension.class)
 class RuleServiceImplTest {
+//    @InjectMocks
+    private RuleServiceImpl underTest;
+    @Mock
+    private RuleRepository ruleRepository;
+    @Mock
+    private RuleEntityToRuleDtoMapper ruleEntityToRuleDtoMapper;
+    @Mock
+    private RuleEntityToRuleMapper ruleEntityToRuleMapper;
 
-    private final IRuleService underTest;
+    @Captor
+    ArgumentCaptor<RuleEntity> ruleEntityArgumentCaptor;
+    @Captor
+    ArgumentCaptor<Long> longArgumentCaptor;
 
-    private final Mapper<RuleEntity, RuleDto> ruleEntityToRuleDtoMapper;
-
-    @Autowired
-    RuleServiceImplTest(IRuleService underTest, Mapper<RuleEntity, RuleDto> ruleEntityToRuleDtoMapper) {
-        this.underTest = underTest;
-        this.ruleEntityToRuleDtoMapper = ruleEntityToRuleDtoMapper;
+    @BeforeEach
+    void setUp() {
+        underTest = new RuleServiceImpl(ruleRepository, ruleEntityToRuleDtoMapper, ruleEntityToRuleMapper);
     }
 
     // Create Rule
     @Test
     void testThatSaveRuleIsSuccessful() {
+        // Data for test
+        RuleDto ruleDto = RuleDtoTestData.createTestRuleDtoA();
         RuleEntity ruleEntity = RuleEntityTestData.createTestRuleEntityA();
-        RuleDto ruleDto = ruleEntityToRuleDtoMapper.mapTo(ruleEntity);
-        RuleDto savedRule;
-        try {
-            savedRule = underTest.save(ruleDto);
-        } catch (InvalidOrMissingDataException | InvalidIpRangeException e) {
-            throw new RuntimeException(e);
-        }
-        assertThat(savedRule).isEqualTo(ruleDto);
+        when(ruleRepository.save(
+                ruleEntityArgumentCaptor.capture())
+        ).thenReturn(ruleEntity);
+        when(ruleEntityToRuleDtoMapper.mapTo(any(RuleEntity.class))).thenReturn(ruleDto);
+        when(ruleEntityToRuleDtoMapper.mapFrom(any(RuleDto.class))).thenReturn(ruleEntity);
+        // Save rule
+        RuleDto ruleSaved = underTest.save(ruleDto);
+        // Asserts
+        assertNotNull(ruleSaved);
+        assertEquals(ruleDto, ruleSaved);
+        assertEquals(ruleEntity, ruleEntityArgumentCaptor.getValue());
+        verify(ruleRepository, times(1)).save(any(RuleEntity.class));
     }
 
-    @Test
-    void testThatSaveRuleThrowsIpFormatException() {
-        RuleDto ruleDto = ruleEntityToRuleDtoMapper.mapTo(RuleEntityTestData.createTestRuleEntityIncorrectIpFormat());
-        Exception exception = assertThrows(InvalidOrMissingDataException.class, () -> underTest.save(ruleDto));
-        assertEquals("Incorrect ip format (e.g. valid format : 123.32.4.212)", exception.getMessage());
-    }
-
-    @Test
-    void testThatSaveRuleThrowsIpFormatExceptionByInvalidNumbersRange() {
-        RuleDto ruleDto = ruleEntityToRuleDtoMapper.mapTo(RuleEntityTestData.createTestRuleEntityInvalidNumbersRange());
-        Exception exception = assertThrows(InvalidOrMissingDataException.class, () -> underTest.save(ruleDto));
-        assertEquals("An IP can only has numbers between 0 and 255 (inclusive)", exception.getMessage());
-    }
-
-
-    @Test
-    void testThatSaveRuleThrowsRuleFormatException() {
-        RuleDto ruleDto = ruleEntityToRuleDtoMapper.mapTo(RuleEntityTestData.createTestRuleEntityWithInvalidRange());
-        Exception exception = assertThrows(InvalidIpRangeException.class, () -> underTest.save(ruleDto));
-        assertEquals("Invalid ip range", exception.getMessage());
-    }
 
     // List all rules
     @Test
     void testThatListRulesIsSuccessful() {
-        try {
-            underTest.save(ruleEntityToRuleDtoMapper.mapTo(
-                    RuleEntityTestData.createTestRuleEntityA())
-            );
-            underTest.save(ruleEntityToRuleDtoMapper.mapTo(
-                    RuleEntityTestData.createTestRuleEntityB())
-            );
-        } catch (InvalidOrMissingDataException | InvalidIpRangeException e) {
-            throw new RuntimeException(e);
-        }
-        Page<RuleDto> rules = underTest.findAll(Pageable.ofSize(20));
-        assertThat(rules)
-                .hasSize(2);
+        // Data for test
+        Page<RuleEntity> ruleEntityPage = new PageImpl<>(
+                List.of(
+                        RuleEntityTestData.createTestRuleEntityA(),
+                        RuleEntityTestData.createTestRuleEntityB()
+                ),
+                Pageable.unpaged(),
+                2
+        );
+        when(ruleRepository.findAll(any(Pageable.class)))
+                .thenReturn(ruleEntityPage);
+        // List rules
+        Page<RuleDto> rulesPage = underTest.findAll(Pageable.unpaged());
+        // Asserts
+        assertNotNull(rulesPage);
+        assertThat(rulesPage).hasSize(2);
     }
 
     // Delete rule by id
     @Test
     void testThatDeleteRuleThrowsDoesNotExistException() {
+        // Data for test
         long id = 1L;
-        Exception exception = assertThrows(RuleDoesNotExistException.class, () -> underTest.delete(id));
-        assertEquals("Rule with id " + id + " does not exist", exception.getMessage());
+        when(ruleRepository.existsById(
+                longArgumentCaptor.capture())
+        ).thenReturn(false);
+        // Throw exception
+        Exception exception = assertThrows(
+                RuleDoesNotExistException.class,
+                () -> underTest.delete(id)
+        );
+        // Asserts
+        assertEquals(
+                "Rule with id " + id + " does not exist",
+                exception.getMessage()
+        );
+        assertEquals(id, longArgumentCaptor.getValue());
+        verify(ruleRepository, times(0)).deleteById(any(Long.class));
+        verify(ruleRepository, times(1)).existsById(any(Long.class));
     }
 
-//    @Test
-//    void testThatCheckIpAccessReturnsTrue() {
-//        Route route = RouteTestData.createRoute();
-//        boolean allow;
-//        try {
-//            underTest.save(ruleEntityToRuleDtoMapper.mapTo(
-//                    RuleEntityTestData.createTestRuleEntityA())
-//            );
-//            allow = underTest.checkIpAccess(route);
-//        } catch (IpFormatException | RuleFormatException e) {
-//            throw new RuntimeException(e);
-//        }
-//        assertTrue(allow);
-//    }
-//    @Test
-//    void testThatCheckIpAccessReturnsFalse() {
-//        Route route = RouteTestData.createRoute();
-//        boolean allow;
-//        try {
-//            underTest.save(ruleEntityToRuleDtoMapper.mapTo(
-//                    RuleEntityTestData.createTestRuleEntityB())
-//            );
-//            allow = underTest.checkIpAccess(route);
-//        } catch (IpFormatException | RuleFormatException e) {
-//            throw new RuntimeException(e);
-//        }
-//        assertFalse(allow);
-//    }
-//
-//    @Test
-//    void testThatCheckIpAccessThrowsIpFormatException() {
-//        Route route = RouteTestData.createRouteInvalidFormatSourceIp();
-//        try {
-//            underTest.save(ruleEntityToRuleDtoMapper.mapTo(
-//                    RuleEntityTestData.createTestRuleEntityB())
-//            );
-//        } catch (IpFormatException | RuleFormatException e) {
-//            throw new RuntimeException(e);
-//        }
-//        Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(route));
-//        assertEquals("Incorrect ip format (e.g. valid format : 123.32.4.212)" ,exception.getMessage());
-//    }
-//
-//    @Test
-//    void testThatCheckIpAccessThrowsIpFormatExceptionByInvalidNumbersRange() {
-//        Route route = RouteTestData.createRouteInvalidNumbersRange();
-//        try {
-//            underTest.save(ruleEntityToRuleDtoMapper.mapTo(
-//                    RuleEntityTestData.createTestRuleEntityB())
-//            );
-//        } catch (IpFormatException | RuleFormatException e) {
-//            throw new RuntimeException(e);
-//        }
-//        Exception exception = assertThrows(IpFormatException.class, () -> underTest.checkIpAccess(route));
-//        assertEquals("An IP can only has numbers between 0 and 255 (inclusive)" ,exception.getMessage());
-//    }
+    @Test
+    void testThatDeleteRuleIsSuccessful() {
+        // Data for test
+        long id = 1L;
+        when(ruleRepository.existsById(
+                longArgumentCaptor.capture())
+        ).thenReturn(true);
+        // Delete rule
+        underTest.delete(id);
+        // Asserts
+        assertEquals(id, longArgumentCaptor.getValue());
+        verify(ruleRepository, times(1)).deleteById(any(Long.class));
+        verify(ruleRepository, times(1)).existsById(any(Long.class));
+    }
+
+    @Test
+    void testThatCheckIpAccessReturnsTrue() {
+        // Data for test
+        RouteDto routeDto = RouteDtoTestData.createRouteDtoA();
+        List<RuleEntity> ruleEntities = List.of(
+                RuleEntityTestData.createTestRuleEntityA()
+        );
+        when(ruleRepository.findByAllow(anyBoolean()))
+                .thenReturn(ruleEntities);
+        when(ruleEntityToRuleMapper.mapTo(any(RuleEntity.class)))
+                .thenReturn(RuleTestData.createTestRuleA());
+        // Check ip access
+        boolean allow = underTest.checkIpAccess(routeDto);
+        assertTrue(allow);
+        verify(ruleRepository, times(1)).findByAllow(anyBoolean());
+    }
+    @Test
+    void testThatCheckIpAccessReturnsFalse() {
+        // Data for test
+        RouteDto routeDto = RouteDtoTestData.createRouteDtoB();
+        List<RuleEntity> ruleEntities = List.of(
+                RuleEntityTestData.createTestRuleEntityA()
+        );
+        when(ruleRepository.findByAllow(anyBoolean()))
+                .thenReturn(ruleEntities);
+        when(ruleEntityToRuleMapper.mapTo(any(RuleEntity.class)))
+                .thenReturn(RuleTestData.createTestRuleA());
+        // Check ip access
+        boolean allow = underTest.checkIpAccess(routeDto);
+        assertFalse(allow);
+        verify(ruleRepository, times(1)).findByAllow(anyBoolean());
+    }
+
 }

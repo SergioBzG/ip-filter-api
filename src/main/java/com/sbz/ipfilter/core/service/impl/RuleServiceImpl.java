@@ -1,9 +1,7 @@
 package com.sbz.ipfilter.core.service.impl;
 
 import com.sbz.ipfilter.core.service.IRuleService;
-import com.sbz.ipfilter.application.exception.InvalidOrMissingDataException;
 import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
-import com.sbz.ipfilter.core.domain.model.Route;
 import com.sbz.ipfilter.core.domain.model.Rule;
 import com.sbz.ipfilter.application.dto.RouteDto;
 import com.sbz.ipfilter.application.dto.RuleDto;
@@ -62,7 +60,7 @@ public class RuleServiceImpl implements IRuleService {
 
     @Cacheable(value = "routes")
     @Override
-    public boolean checkIpAccess(RouteDto routeDto) throws InvalidOrMissingDataException {
+    public boolean checkIpAccess(RouteDto routeDto) {
         List<RuleEntity> rulesEntitiesAllowed = this.ruleRepository.findByAllow(true);
         List<Rule> rulesAllowed = rulesEntitiesAllowed.stream()
                 .map(this.ruleEntityToRuleMapper::mapTo)
