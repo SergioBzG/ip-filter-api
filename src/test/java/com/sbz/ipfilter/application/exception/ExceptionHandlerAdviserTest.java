@@ -22,6 +22,7 @@ class ExceptionHandlerAdviserTest {
         InvalidOrMissingDataException exception = new InvalidOrMissingDataException(
                 "Invalid data in rule"
         );
+        // Call method
         ResponseEntity<Response> response = underTest.invalidOrMissingDataExceptionHandler(exception);
         // Asserts
         assertNotNull(response);
@@ -40,6 +41,8 @@ class ExceptionHandlerAdviserTest {
         InvalidIpRangeException exception = new InvalidIpRangeException(
                 "Invalid IP range"
         );
+
+        // Call method
         ResponseEntity<Response> response = underTest.invalidIpRangeExceptionHandler(exception);
         // Asserts
         assertNotNull(response);
@@ -56,6 +59,7 @@ class ExceptionHandlerAdviserTest {
         // Data for test
         Response ruleDoesNotExistExceptionResponse = ResponseTestData.getRuleDoesNotExistException();
         RuleDoesNotExistException exception = new RuleDoesNotExistException(1L);
+        // Call method
         ResponseEntity<Response> response = underTest.ruleDoesNotExistExceptionHandler(exception);
         // Asserts
         assertNotNull(response);
@@ -74,6 +78,7 @@ class ExceptionHandlerAdviserTest {
         Exception exception = new Exception(
                 "Fatal error"
         );
+        // Call method
         ResponseEntity<Response> response = underTest.exceptionHandler(exception);
         // Asserts
         assertNotNull(response);

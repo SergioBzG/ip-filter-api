@@ -24,4 +24,48 @@ public class RuleDtoTestData {
                 .allow(true)
                 .build();
     }
+
+    public static RuleDto createTestRuleDtoWithNumbersOutOfRange() {
+        return RuleDto.builder()
+                .id(3L)
+                .lowerSourceIp("455.34.24.255")
+                .upperSourceIp("144.234.123.32")
+                .lowerDestinationIp("34.123.54.12")
+                .upperDestinationIp("245.123.03.0")
+                .allow(true)
+                .build();
+    }
+
+    public static RuleDto createTestRuleDtoWithInvalidSourceRange() {
+        return RuleDto.builder()
+                .id(3L)
+                .lowerSourceIp("123.34.24.255")
+                .upperSourceIp("12.234.123.32")
+                .lowerDestinationIp("34.123.54.12")
+                .upperDestinationIp("245.123.03.0")
+                .allow(true)
+                .build();
+    }
+
+    public static RuleDto createTestRuleDtoWithInvalidDestinationRange() {
+        return RuleDto.builder()
+                .id(3L)
+                .lowerSourceIp("12.34.24.255")
+                .upperSourceIp("144.234.123.32")
+                .lowerDestinationIp("34.123.54.12")
+                .upperDestinationIp("1.123.03.0")
+                .allow(true)
+                .build();
+    }
+
+    public static RuleDto createTestRuleDtoWithInvalidRange() {
+        return RuleDto.builder()
+                .id(3L)
+                .lowerSourceIp("122.34.24.255")
+                .upperSourceIp("14.234.123.32")
+                .lowerDestinationIp("34.123.54.12")
+                .upperDestinationIp("1.123.03.0")
+                .allow(true)
+                .build();
+    }
 }
