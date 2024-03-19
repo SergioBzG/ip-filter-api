@@ -48,6 +48,7 @@ public class RuleController {
 
     @PostMapping(path = "/check")
     public ResponseEntity<Response> checkIp(@Validated @RequestBody RouteDto routeDto, BindingResult errors) {
+        // Validations
         this.routeValidator.checkInvalidOrMissingData(errors);
         this.routeValidator.checkIpNumbersInRoute(routeDto);
         boolean allow = this.ruleService.checkIpAccess(routeDto);

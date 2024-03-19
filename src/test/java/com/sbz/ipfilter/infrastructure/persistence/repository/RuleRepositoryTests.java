@@ -37,7 +37,7 @@ class RuleRepositoryTests {
 
     // Create and Read multiple Rules
     @Test
-    void testThatMultipleRulesCanBeReadAndRecall() {
+    void testThatMultipleRulesCanBeCreatedAndRecall() {
         RuleEntity ruleEntityA = RuleEntityTestData.createTestRuleEntityA();
         RuleEntity ruleEntityB = RuleEntityTestData.createTestRuleEntityB();
         underTest.save(ruleEntityA);
