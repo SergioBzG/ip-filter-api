@@ -17,13 +17,13 @@ public class RouteDto {
 
     @NotBlank(message = "A source ip is required")
     @Size(max = 15, message = "Max length is 15")
-    @Pattern(regexp = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$",
+    @Pattern(regexp = "^(?:\\d{1,3}\\.){3}\\d{1,3}$",
             message = "Incorrect ip format (valid format e.g. 123.32.4.212)")
     private String sourceIp;
 
     @NotBlank(message = "A destination ip is required")
     @Size(max = 15, message = "Max length is 15")
-    @Pattern(regexp = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$",
+    @Pattern(regexp = "^(?:\\d{1,3}\\.){3}\\d{1,3}$",
             message = "Incorrect ip format (valid format e.g. 123.32.4.212)")
     private String destinationIp;
 

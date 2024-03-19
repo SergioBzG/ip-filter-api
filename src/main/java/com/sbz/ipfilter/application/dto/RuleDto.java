@@ -20,25 +20,25 @@ public class RuleDto implements Serializable {
 
     @NotBlank(message = "A lower source ip is required")
     @Size(max = 15, message = "Max length is 15")
-    @Pattern(regexp = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$",
+    @Pattern(regexp = "^(?:\\d{1,3}\\.){3}\\d{1,3}$",
             message = "Incorrect ip format (valid format e.g. 123.32.4.212)")
     private String lowerSourceIp;
 
     @NotBlank(message = "A lower source ip is required")
     @Size(max = 15, message = "Max length is 15")
-    @Pattern(regexp = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$",
+    @Pattern(regexp = "^(?:\\d{1,3}\\.){3}\\d{1,3}$",
             message = "Incorrect ip format (valid format e.g. 123.32.4.212)")
     private String upperSourceIp;
 
     @NotBlank(message = "A lower source ip is required")
     @Size(max = 15, message = "Max length is 15")
-    @Pattern(regexp = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$",
+    @Pattern(regexp = "^(?:\\d{1,3}\\.){3}\\d{1,3}$",
             message = "Incorrect ip format (valid format e.g. 123.32.4.212)")
     private String lowerDestinationIp;
 
     @NotBlank(message = "A lower source ip is required")
     @Size(max = 15, message = "Max length is 15")
-    @Pattern(regexp = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$",
+    @Pattern(regexp = "^(?:\\d{1,3}\\.){3}\\d{1,3}$",
             message = "Incorrect ip format (valid format e.g. 123.32.4.212)")
     private String upperDestinationIp;
 
