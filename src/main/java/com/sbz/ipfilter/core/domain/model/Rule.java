@@ -1,53 +1,38 @@
 package com.sbz.ipfilter.core.domain.model;
 
-import com.sbz.ipfilter.core.usecase.utils.IpChecker;
-import com.sbz.ipfilter.core.usecase.utils.RuleChecker;
+import com.sbz.ipfilter.common.RawIpConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Deque;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Rule implements RuleChecker, IpChecker {
-    private String lowerSourceIp;
-    private String upperSourceIp;
-    private String lowerDestinationIp;
-    private String upperDestinationIp;
+public class Rule implements RawIpConverter {
+    private Route sourceRange;
+    private Route destinationRange;
     private Boolean allow;
-    private Deque<Integer> lowerSourceRowIp;
-    private Deque<Integer> upperSourceRowIp;
-    private Deque<Integer> lowerDestinationRowIp;
-    private Deque<Integer> upperDestinationRowIp;
 
     public boolean checkSourceIpAccess(String sourceIp) {
-        Deque<Integer> rowIp = this.getRawIp(sourceIp);
-        return this.checkIpInRange(rowIp, this.lowerSourceRowIp, this.upperSourceRowIp);
+        return this.checkIpInRange(
+                this.getRawIp(sourceIp),
+                this.getRawIp(this.sourceRange.getSourceIp()),
+                this.getRawIp(this.sourceRange.getDestinationIp())
+        );
     }
 
     public boolean checkDestinationIpAccess(String destinationIp) {
-        Deque<Integer> rowIp = this.getRawIp(destinationIp);
-        return this.checkIpInRange(rowIp, this.lowerDestinationRowIp, this.upperDestinationRowIp);
+        return this.checkIpInRange(
+                this.getRawIp(destinationIp),
+                this.getRawIp(this.destinationRange.getSourceIp()),
+                this.getRawIp(this.destinationRange.getDestinationIp())
+        );
     }
 
-    public boolean checkSourceAndDestinationIpRange() {
-        return this.checkIpRange(this.lowerSourceRowIp, this.upperSourceRowIp) &&
-                this.checkIpRange(this.lowerDestinationRowIp, this.upperDestinationRowIp);
-    }
-
-    public void getRawIps() {
-        this.lowerSourceRowIp = this.getRawIp(this.lowerSourceIp);
-        this.upperSourceRowIp = this.getRawIp(this.upperSourceIp);
-        this.lowerDestinationRowIp = this.getRawIp(this.lowerDestinationIp);
-        this.upperDestinationRowIp = this.getRawIp(this.upperDestinationIp);
-    }
-
-    @Override
     public boolean checkIpInRange(Deque<Integer> ip, Deque<Integer> lowerIp, Deque<Integer> upperIp) {
         boolean lowerBoundChecked = false;
         boolean upperBoundChecked = false;
@@ -75,43 +60,5 @@ public class Rule implements RuleChecker, IpChecker {
                 return true;
         }
         return true;
-    }
-
-    @Override
-    public boolean checkIpFormat() {
-        return this.getLowerSourceIp().matches(IP_PATTERN)
-                && this.getUpperSourceIp().matches(IP_PATTERN)
-                && this.getLowerDestinationIp().matches(IP_PATTERN)
-                && this.getUpperDestinationIp().matches(IP_PATTERN);
-    }
-
-    @Override
-    public boolean checkIpRange(Deque<Integer> lowerIp, Deque<Integer> upperIp) {
-
-        while(!lowerIp.isEmpty()) {
-            int firstPartOfLower = lowerIp.pollFirst();
-            int firstPartOfUpper = upperIp.pollFirst();
-
-            if(firstPartOfLower < firstPartOfUpper)
-                return true;
-            else if(firstPartOfLower > firstPartOfUpper)
-                return false;
-        }
-        // In case of the ips are the same
-        return false;
-    }
-
-    @Override
-    public boolean checkIpNumbers() {
-        String allNumberInIps = String.join(
-                ".",
-                this.lowerSourceIp,
-                this.upperSourceIp,
-                this.lowerDestinationIp,
-                this.upperDestinationIp
-        );
-        return Arrays.stream(allNumberInIps.split("\\."))
-                .map(Integer::valueOf)
-                .noneMatch(num -> num > 255);
     }
 }

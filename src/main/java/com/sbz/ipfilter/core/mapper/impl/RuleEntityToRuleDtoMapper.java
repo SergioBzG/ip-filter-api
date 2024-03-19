@@ -1,8 +1,8 @@
-package com.sbz.ipfilter.infrastructure.persistence.mapper.impl;
+package com.sbz.ipfilter.core.mapper.impl;
 
-import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
+import com.sbz.ipfilter.core.mapper.Mapper;
+import com.sbz.ipfilter.application.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.RuleEntity;
-import com.sbz.ipfilter.infrastructure.persistence.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

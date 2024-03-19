@@ -1,10 +1,10 @@
 package com.sbz.ipfilter.application.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
+import com.sbz.ipfilter.core.service.IRuleService;
+import com.sbz.ipfilter.application.dto.RuleDto;
 import com.sbz.ipfilter.infrastructure.persistence.entity.RuleEntity;
-import com.sbz.ipfilter.infrastructure.persistence.mapper.Mapper;
+import com.sbz.ipfilter.core.mapper.Mapper;
 import com.sbz.ipfilter.utils.RouteTestData;
 import com.sbz.ipfilter.utils.RuleEntityTestData;
 import org.junit.jupiter.api.Test;

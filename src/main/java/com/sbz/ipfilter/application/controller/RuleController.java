@@ -1,29 +1,29 @@
 package com.sbz.ipfilter.application.controller;
 
-import com.sbz.ipfilter.application.exception.IpFormatException;
-import com.sbz.ipfilter.application.exception.RuleDoesNotExistException;
-import com.sbz.ipfilter.application.exception.RuleFormatException;
-import com.sbz.ipfilter.application.service.IRuleService;
-import com.sbz.ipfilter.core.domain.model.Route;
+import com.sbz.ipfilter.application.validator.impl.RouteValidator;
+import com.sbz.ipfilter.application.validator.impl.RuleValidator;
+import com.sbz.ipfilter.core.service.IRuleService;
 import com.sbz.ipfilter.application.utils.Response;
-import com.sbz.ipfilter.infrastructure.persistence.dto.RuleDto;
-import jakarta.validation.Valid;
+import com.sbz.ipfilter.application.dto.RouteDto;
+import com.sbz.ipfilter.application.dto.RuleDto;
+import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(path = "/rules")
 public class RuleController {
 
     private final IRuleService ruleService;
-
-    public RuleController(final IRuleService ruleService) {
-        this.ruleService = ruleService;
-    }
+    private final RuleValidator ruleValidator;
+    private final RouteValidator routeValidator;
 
     @GetMapping
     public ResponseEntity<Page<RuleDto>> getRules(@ParameterObject Pageable pageable) {
@@ -32,34 +32,25 @@ public class RuleController {
     }
 
     @PostMapping
-    public ResponseEntity createRule(@Valid @RequestBody RuleDto ruleDto) {
-        RuleDto ruleSaved;
-        try {
-            ruleSaved = this.ruleService.save(ruleDto);
-        } catch (IpFormatException | RuleFormatException e) {
-            return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(ruleSaved, HttpStatus.CREATED);
+    public ResponseEntity<RuleDto> createRule(@Validated @RequestBody RuleDto ruleDto, BindingResult errors) {
+        // Validations
+        this.ruleValidator.checkInvalidOrMissingData(errors);
+        this.ruleValidator.checkIpNumbersInRule(ruleDto);
+        this.ruleValidator.checkSourceAndDestinationIpRange(ruleDto);
+        return new ResponseEntity<>(this.ruleService.save(ruleDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity deleteRule(@PathVariable("id") Long id) {
-        try {
-            ruleService.delete(id);
-        } catch (RuleDoesNotExistException e) {
-            return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> deleteRule(@PathVariable("id") Long id) {
+        ruleService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/check")
-    public ResponseEntity<Response> checkIp(@Valid @RequestBody Route route) {
-        boolean allow;
-        try {
-            allow = this.ruleService.checkIpAccess(route);
-        } catch (IpFormatException e) {
-            return new ResponseEntity<>(new Response(e.getMessage(), false), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Response> checkIp(@Validated @RequestBody RouteDto routeDto, BindingResult errors) {
+        this.routeValidator.checkInvalidOrMissingData(errors);
+        this.routeValidator.checkIpNumbersInRoute(routeDto);
+        boolean allow = this.ruleService.checkIpAccess(routeDto);
         if(allow)
             return new ResponseEntity<>(new Response("Allowed access", true), HttpStatus.OK);
         return new ResponseEntity<>(new Response("Denied access", true), HttpStatus.OK);

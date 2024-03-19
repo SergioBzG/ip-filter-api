@@ -1,7 +1,6 @@
-package com.sbz.ipfilter.infrastructure.persistence.mapper;
+package com.sbz.ipfilter.core.mapper;
 
 public interface Mapper<A, B> {
     B mapTo(A a);
-
     A mapFrom(B b);
 }
